@@ -246,12 +246,12 @@ public class RestManager implements RestAPI {
             final Call<ResponseBody> call = mService.unregisterToken(deviceId, paramObject.toString());
             call.enqueue(new DefaultResponseHandler<>(new NotifiableCallback<ResponseBody>() {
                 @Override
-                public void onSuccess(ResponseBody ret) {
-                    callback.onSuccess(null);
+                public void onSuccess(@NonNull ResponseBody ret) {
+                    callback.onSuccess(new Object());
                 }
 
                 @Override
-                public void onError(String error) {
+                public void onError(@NonNull String error) {
                     callback.onError(error);
                 }
             }));
@@ -273,12 +273,12 @@ public class RestManager implements RestAPI {
             final Call<ResponseBody> call = mService.markNotificationAsOpened(notificationId, paramObject.toString());
             call.enqueue(new DefaultResponseHandler<>(new NotifiableCallback<ResponseBody>() {
                 @Override
-                public void onSuccess(ResponseBody ret) {
-                    callback.onSuccess(null);
+                public void onSuccess(@NonNull ResponseBody ret) {
+                    callback.onSuccess(new Object());
                 }
 
                 @Override
-                public void onError(String error) {
+                public void onError(@NonNull String error) {
                     callback.onError(error);
                 }
             }));
@@ -300,12 +300,12 @@ public class RestManager implements RestAPI {
             final Call<ResponseBody> call = mService.markNotificationAsReceived(notificationId, paramObject.toString());
             call.enqueue(new DefaultResponseHandler<>(new NotifiableCallback<ResponseBody>() {
                 @Override
-                public void onSuccess(ResponseBody ret) {
-                    callback.onSuccess(null);
+                public void onSuccess(@NonNull ResponseBody ret) {
+                    callback.onSuccess(new Object());
                 }
 
                 @Override
-                public void onError(String error) {
+                public void onError(@NonNull String error) {
                     callback.onError(error);
                 }
             }));

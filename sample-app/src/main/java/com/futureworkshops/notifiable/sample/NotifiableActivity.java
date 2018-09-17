@@ -215,14 +215,14 @@ public class NotifiableActivity extends AppCompatActivity {
         mNotifiableManager.markNotificationOpened(String.valueOf(mLatestNotification.getNotificationId()),
             String.valueOf(mDeviceId), new NotifiableCallback<Object>() {
                 @Override
-                public void onSuccess(Object ret) {
+                public void onSuccess(@NonNull Object ret) {
                     showSnackbar("Notification marked as open");
                     mLatestNotification = null;
                     mOpenNotificationButton.setVisibility(View.GONE);
                 }
 
                 @Override
-                public void onError(String error) {
+                public void onError(@NonNull String error) {
                     showSnackbar(error);
                 }
             });
@@ -231,12 +231,12 @@ public class NotifiableActivity extends AppCompatActivity {
     private void updateDeviceToken() {
         final NotifiableCallback<NotifiableDevice> callback = new NotifiableCallback<NotifiableDevice>() {
             @Override
-            public void onSuccess(NotifiableDevice ret) {
+            public void onSuccess(@NonNull NotifiableDevice ret) {
                 showSnackbar("GCM token has been refreshed");
             }
 
             @Override
-            public void onError(String error) {
+            public void onError(@NonNull String error) {
                 showSnackbar(error);
             }
         };
@@ -423,7 +423,7 @@ public class NotifiableActivity extends AppCompatActivity {
                 mCurrentLocale, NotifiableManager.GOOGLE_CLOUD_MESSAGING_PROVIDER,
                 new NotifiableCallback<NotifiableDevice>() {
                     @Override
-                    public void onSuccess(NotifiableDevice ret) {
+                    public void onSuccess(@NonNull NotifiableDevice ret) {
                         mDeviceName = deviceName;
                         mDeviceUser = user;
                         mState = NotifiableStates.REGISTERED_ANONYMOUSLY;
@@ -435,7 +435,7 @@ public class NotifiableActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onError(String error) {
+                    public void onError(@NonNull String error) {
                         mSharedPrefs.edit().putInt(Constants.NOTIFIABLE_DEVICE_ID, -1).apply();
                         showSnackbar(error);
                     }
@@ -445,7 +445,7 @@ public class NotifiableActivity extends AppCompatActivity {
                 mCurrentLocale, NotifiableManager.GOOGLE_CLOUD_MESSAGING_PROVIDER,
                 new NotifiableCallback<NotifiableDevice>() {
                     @Override
-                    public void onSuccess(NotifiableDevice ret) {
+                    public void onSuccess(@NonNull NotifiableDevice ret) {
                         mDeviceUser = user;
                         mDeviceName = deviceName;
                         mState = NotifiableStates.REGISTERED_WITH_USER;
@@ -457,7 +457,7 @@ public class NotifiableActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onError(String error) {
+                    public void onError(@NonNull String error) {
                         mSharedPrefs.edit().putInt(Constants.NOTIFIABLE_DEVICE_ID, -1).apply();
                         showSnackbar(error);
                     }
@@ -474,12 +474,12 @@ public class NotifiableActivity extends AppCompatActivity {
 
         NotifiableCallback<NotifiableDevice> notifiableCallback = new NotifiableCallback<NotifiableDevice>() {
             @Override
-            public void onSuccess(NotifiableDevice ret) {
+            public void onSuccess(@NonNull NotifiableDevice ret) {
                 showSnackbar("Updated device with id " + String.valueOf(ret.getId()));
             }
 
             @Override
-            public void onError(String error) {
+            public void onError(@NonNull String error) {
                 showSnackbar(error);
             }
         };
@@ -490,13 +490,13 @@ public class NotifiableActivity extends AppCompatActivity {
     private void updateDeviceName(final String name) {
         NotifiableCallback<NotifiableDevice> callback = new NotifiableCallback<NotifiableDevice>() {
             @Override
-            public void onSuccess(NotifiableDevice ret) {
+            public void onSuccess(@NonNull NotifiableDevice ret) {
                 mDeviceName = name;
                 showSnackbar("Updated device name to " + name);
             }
 
             @Override
-            public void onError(String error) {
+            public void onError(@NonNull String error) {
                 showSnackbar(error);
             }
         };
@@ -512,14 +512,14 @@ public class NotifiableActivity extends AppCompatActivity {
     private void updateDeviceLocale(final Locale locale) {
         NotifiableCallback<NotifiableDevice> callback = new NotifiableCallback<NotifiableDevice>() {
             @Override
-            public void onSuccess(NotifiableDevice ret) {
+            public void onSuccess(@NonNull NotifiableDevice ret) {
                 mCurrentLocale = locale;
 
                 showSnackbar("Updated device Locale to " + locale.getDisplayName());
             }
 
             @Override
-            public void onError(String error) {
+            public void onError(@NonNull String error) {
                 showSnackbar(error);
             }
         };
@@ -530,7 +530,7 @@ public class NotifiableActivity extends AppCompatActivity {
     private void unassignDevice() {
         mNotifiableManager.unassignDeviceFromUser(mDeviceName, mGcmToken, new NotifiableCallback<NotifiableDevice>() {
             @Override
-            public void onSuccess(NotifiableDevice ret) {
+            public void onSuccess(@NonNull NotifiableDevice ret) {
                 mState = NotifiableStates.REGISTERED_ANONYMOUSLY;
                 updateUi();
 
@@ -539,7 +539,7 @@ public class NotifiableActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onError(String error) {
+            public void onError(@NonNull String error) {
                 showSnackbar(error);
             }
         });
@@ -548,7 +548,7 @@ public class NotifiableActivity extends AppCompatActivity {
     private void assignDeviceToUser(@NonNull final String userName) {
         mNotifiableManager.assignDeviceToUser(userName, mDeviceName, mGcmToken, new NotifiableCallback<NotifiableDevice>() {
             @Override
-            public void onSuccess(NotifiableDevice ret) {
+            public void onSuccess(@NonNull NotifiableDevice ret) {
                 mDeviceUser = userName;
                 mState = NotifiableStates.REGISTERED_WITH_USER;
                 updateUi();
@@ -557,7 +557,7 @@ public class NotifiableActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onError(String error) {
+            public void onError(@NonNull String error) {
                 showSnackbar(error);
             }
         });
@@ -566,7 +566,7 @@ public class NotifiableActivity extends AppCompatActivity {
     private void unregisterDevice() {
         mNotifiableManager.unregisterDevice(String.valueOf(mDeviceId), new NotifiableCallback<Object>() {
             @Override
-            public void onSuccess(Object ret) {
+            public void onSuccess(@NonNull Object ret) {
                 mSharedPrefs.edit().putInt(Constants.NOTIFIABLE_DEVICE_ID, -1).apply();
 
                 // hide buttons
@@ -577,7 +577,7 @@ public class NotifiableActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onError(String error) {
+            public void onError(@NonNull String error) {
                 showSnackbar(error);
             }
         });

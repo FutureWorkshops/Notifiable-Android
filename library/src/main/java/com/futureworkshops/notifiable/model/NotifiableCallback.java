@@ -4,12 +4,14 @@
 
 package com.futureworkshops.notifiable.model;
 
+import android.support.annotation.NonNull;
+
 /**
  * Created by stelian on 22/03/2016.
  */
 public interface NotifiableCallback<S> {
 
-    void onSuccess(S ret);
+    void onSuccess(@NonNull S ret);
 
-    void onError(String error);
+    void onError(@NonNull String error);
 }

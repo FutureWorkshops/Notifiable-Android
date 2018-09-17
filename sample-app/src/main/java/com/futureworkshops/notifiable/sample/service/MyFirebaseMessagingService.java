@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -108,12 +109,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         mNotifiableManager.markNotificationReceived(String.valueOf(notification.getNotificationId()),
             String.valueOf(deviceId), new NotifiableCallback<Object>() {
                 @Override
-                public void onSuccess(Object ret) {
+                public void onSuccess(@NonNull Object ret) {
                     Log.d("NotificationService", "notification marked as received");
                 }
 
                 @Override
-                public void onError(String error) {
+                public void onError(@NonNull String error) {
                     Log.e("NotificationService", "Notification delivery error : " + error);
 
                 }
