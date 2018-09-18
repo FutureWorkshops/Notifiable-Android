@@ -1,0 +1,5 @@
+/*
+ * Copyright (c) 2018 Future Workshops. All rights reserved.
+ */
+
+include ':sample-app', ':library'

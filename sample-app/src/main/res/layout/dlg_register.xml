@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2018 Future Workshops. All rights reserved.
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+    android:layout_marginRight="@dimen/activity_horizontal_margin">
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/user_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:descendantFocusability="afterDescendants">
+
+        <EditText
+            android:id="@+id/user_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/lbl_user_name"
+            android:lines="1"
+            android:maxLines="1"
+            android:padding="@dimen/default_padding"
+            android:singleLine="true"
+            tools:text="value" />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/device_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:descendantFocusability="afterDescendants">
+
+        <EditText
+            android:id="@+id/device_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/lbl_device_name"
+            android:lines="1"
+            android:maxLines="1"
+            android:padding="@dimen/default_padding"
+            android:singleLine="true"
+            tools:text="value" />
+
+    </android.support.design.widget.TextInputLayout>
+
+</LinearLayout>

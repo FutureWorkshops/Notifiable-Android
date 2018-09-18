@@ -1,0 +1,104 @@
+apply plugin: 'com.android.application'
+apply from: '../android_commons.gradle'
+apply from: '../android_dependencies.gradle'
+
+android {
+
+    defaultConfig {
+        applicationId "com.futureworkshops.notifiable.sample"
+        versionCode Integer.parseInt(project.property('project.buildnumber'))
+        versionName project.property('project.buildversion')
+
+    }
+
+    buildTypes {
+        debug {
+
+            if (file("../dev_credentials.properties").exists()) {
+                def props = new Properties()
+                file("../dev_credentials.properties").withInputStream {
+                    props.load(it)
+                }
+
+                buildConfigField "String", "NOTIFIABLE_SERVER", props.getProperty('dev.notifiable.server')
+                buildConfigField "String", "NOTIFIABLE_CLIENT_ID", props.getProperty('dev.notifiable.client')
+                buildConfigField "String", "NOTIFIABLE_CLIENT_SECRET", props.getProperty('dev.notifiable.secret')
+
+            } else {
+                buildConfigField "String", "NOTIFIABLE_SERVER", project.property('notifiable.server')
+                buildConfigField "String", "NOTIFIABLE_CLIENT_ID", project.property('notifiable.client')
+                buildConfigField "String", "NOTIFIABLE_CLIENT_SECRET", project.property('notifiable.secret')
+            }
+        }
+
+        release {
+            buildConfigField "String", "NOTIFIABLE_SERVER", project.property('notifiable.server')
+            buildConfigField "String", "NOTIFIABLE_CLIENT_ID", project.property('notifiable.client')
+            buildConfigField "String", "NOTIFIABLE_CLIENT_SECRET", project.property('notifiable.secret')
+
+            minifyEnabled false
+        }
+    }
+
+
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            outputFileName = "NotifiableSample-${variant.name}.apk"
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation project(':library')
+
+    def uiDependencies = rootProject.ext.uiDependencies
+    def domainDependencies = rootProject.ext.domainDependencies
+
+    implementation domainDependencies.firebaseCore
+    implementation domainDependencies.firebaseMessaging
+
+
+    implementation uiDependencies.appCompat
+    implementation uiDependencies.designCompat
+    implementation uiDependencies.butterKnife
+    annotationProcessor uiDependencies.butterKnifeApt
+
+}
+
+/*
+ * Copyright (c) 2018 Future Workshops. All rights reserved.
+ */
+
+//task setupDevEnv << {
+//    println "dev setup"
+//
+//    if (file("../dev_credentials.properties").exists()) {
+//        def props = new Properties()
+//        file("../dev_credentials.properties").withInputStream {
+//            props.load(it)
+//        }
+//
+//        project['notifiable.server'] = props.getProperty('dev.notifiable.server')
+//        project['notifiable.client'] = props.getProperty('dev.notifiable.client')
+//        project['notifiable.secret'] = props.getProperty('dev.notifiable.secret')
+//
+//        println(project.property('notifiable.server'))
+//        println(project.property('notifiable.client'))
+//        println(project.property('notifiable.secret'))
+//
+//    }
+//}
+//
+//assemble.dependsOn setupDevEnv
+
+apply plugin: 'com.google.gms.google-services'

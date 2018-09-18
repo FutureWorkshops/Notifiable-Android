@@ -1,0 +1,17 @@
+#Android Studio
+.idea
+*.iml
+*.ipr
+*.iws
+classes
+gen-external-apklibs
+
+#Gradle
+.gradle
+local.properties
+build
+
+dev_credentials.properties
+
+#Other
+.DS_Store

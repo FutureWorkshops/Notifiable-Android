@@ -1,0 +1,43 @@
+<!--
+  ~ Copyright (c) 2018 Future Workshops. All rights reserved.
+  -->
+
+<resources>
+    <string name="app_name">Notifiable-Android</string>
+    <string name="gcm_send_message">Token retrieved and sent to server! You can now use gcmsender to
+        send downstream messages to this app.</string>
+    <string name="registering_message">Generating InstanceID token...</string>
+    <string name="token_error_message">An error occurred while either fetching the InstanceID token,
+        sending the fetched token to the server or subscribing to the PubSub topic. Please try
+        running the sample again.</string>
+    <string name="action_get_gcm_token">Get GCM token</string>
+    <string name="action_register_with_name">Register Device</string>
+    <string name="action_get_user_devices">Get user devices</string>
+    <string name="action_check_token">Check if token is registered</string>
+    <string name="err_gcm_token">Could not obtain GCM token</string>
+    <string name="title_register_device">Register device</string>
+    <string name="action_ok">OK</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="lbl_user_name">Username</string>
+    <string name="lbl_device_name">Device name</string>
+    <string name="err_user_required">User name is required</string>
+    <string name="err_device_name_required">Device name is required</string>
+    <string name="action_update_device">Update device</string>
+    <string name="action_unregister_device">Unregister device</string>
+    <string name="lbl_os">OS</string>
+    <string name="lbl_is_emulator">Is emulator</string>
+    <string name="title_unregister_device">Unregister device</string>
+    <string name="msg_unregister_device_confirmation">This will stop your device from receiving notifications.\nDo you want to continue ?</string>
+    <string name="title_user_devices">User devices</string>
+    <string name="action_mark_notification_as_opened">Mark notification as opened</string>
+    <string name="action_register_anonymously">Register Anonymous device</string>
+    <string name="action_update_device_name">Update device name</string>
+    <string name="action_update_device_locale">Update device locale</string>
+    <string name="action_update_device_token">Update device token</string>
+    <string name="action_assign_device_to_user">Assign device to user</string>
+    <string name="action_unassign_device_from_user">Unassign device from user</string>
+    <string name="title_update_device">Update device</string>
+    <string name="title_unassign_device">Unassign device</string>
+    <string name="msg_unassign_device_confirmation">This will unassign the device from the registered user but it will not stop it from receiving notifications. \nDo you want to continue ?</string>
+    <!--<string name="gcm_defaultSenderId">972794828944</string>-->
+</resources>
