@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import com.futureworkshops.notifiable.BuildConfig;
 import com.futureworkshops.notifiable.LocaleParser;
 import com.futureworkshops.notifiable.Utils;
 import com.futureworkshops.notifiable.model.GenericResponse;
@@ -73,7 +74,11 @@ public class RestManager implements RestAPI {
         JavaNetCookieJar javaNetCookieJar = new JavaNetCookieJar(cookieManager);
 
         final HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        if (BuildConfig.DEBUG) {
+            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        } else {
+            logging.setLevel(HttpLoggingInterceptor.Level.NONE);
+        }
 
         final OkHttpClient okHttpClient = new OkHttpClient.Builder()
             .addInterceptor(new RequestInterceptor(clientSecret))
