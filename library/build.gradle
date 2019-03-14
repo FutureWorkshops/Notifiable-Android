@@ -63,7 +63,8 @@ dependencies {
 
     implementation uiDependencies.supportAnnotation
     
-    implementation domainDependencies.jodaTime
+    compileOnly domainDependencies.jodaTime
+    
     implementation domainDependencies.gson
     implementation domainDependencies.retrofit
     implementation domainDependencies.retrofitConverterGson
