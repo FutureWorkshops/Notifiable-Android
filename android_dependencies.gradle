@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Future Workshops. All rights reserved.
+ * Copyright ©  2018 - 2019 FutureWorkshops. All rights reserved.
  */
 
 rootProject.ext {
@@ -10,7 +10,7 @@ rootProject.ext {
     retrofitVersion = '2.3.0'
     okHttpVersion = '3.10.0'
     playServicesVersion = '11.4.2'
-    jodaVersion = '2.9.9.3'
+    jodaVersion = '2.10.1'
     firebaseCoreVersion = '16.0.1'
     firebaseMessagingVersion = '17.1.0'
 
@@ -63,7 +63,7 @@ rootProject.ext {
             playServices_vision  :
                     "com.google.android.gms:play-services-vision:$playServicesVersion",
             jodaTime  :
-                    "net.danlew:android.joda:$jodaVersion",
+                    "joda-time:joda-time:$jodaVersion",
             firebaseCore    :
                     "com.google.firebase:firebase-core:$firebaseCoreVersion",
             firebaseMessaging    :
