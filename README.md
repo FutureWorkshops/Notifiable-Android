@@ -34,6 +34,14 @@ You are now ready to add the dependency to your application
 
 ```
 
+#### 4. Add ProGuard rule
+
+Add the following rule to your exising PProGuard setup
+
+```
+    -keep class com.futureworkshops.notifiable.model.** { *; }
+```
+
 ### Gradle
 
 Not available yet.
