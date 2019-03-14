@@ -34,7 +34,15 @@ You are now ready to add the dependency to your application
 
 ```
 
-#### 4. Add ProGuard rule
+#### 4. Add Joda dependency
+
+Joda is required for the library to function properly!
+
+```
+    implementation 'joda-time:joda-time:2.10.1'
+```
+
+#### 5. Add ProGuard rule
 
 Add the following rule to your exising PProGuard setup
 
