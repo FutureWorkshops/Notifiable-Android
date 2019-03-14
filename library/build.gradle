@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Future Workshops. All rights reserved.
+ * Copyright ©  2018 - 2019 FutureWorkshops. All rights reserved.
  */
 
 apply plugin: 'com.android.library'
@@ -57,13 +57,13 @@ android {
 
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     def uiDependencies = rootProject.ext.uiDependencies
     def domainDependencies = rootProject.ext.domainDependencies
 
     implementation uiDependencies.supportAnnotation
     
+    implementation domainDependencies.jodaTime
     implementation domainDependencies.gson
     implementation domainDependencies.retrofit
     implementation domainDependencies.retrofitConverterGson
