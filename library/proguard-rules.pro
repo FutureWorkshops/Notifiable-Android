@@ -16,6 +16,9 @@
 #   public *;
 #}
 
+#Notifiable
+-keep class com.futureworkshops.notifiable.model.** { *; }
+
 # Joda ProGuard
 -dontwarn org.joda.convert.**
 -dontwarn org.joda.time.**
