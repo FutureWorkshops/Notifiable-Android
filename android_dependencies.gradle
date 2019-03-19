@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Future Workshops. All rights reserved.
+ * Copyright ©  2018 - 2019 FutureWorkshops. All rights reserved.
  */
 
 rootProject.ext {
@@ -9,8 +9,8 @@ rootProject.ext {
     gsonVersion = '2.8.0'
     retrofitVersion = '2.3.0'
     okHttpVersion = '3.10.0'
-    playServicesVersion = '11.4.2'
-    jodaVersion = '2.9.9.3'
+   
+    jodaVersion = '2.10.1'
     firebaseCoreVersion = '16.0.1'
     firebaseMessagingVersion = '17.1.0'
 
@@ -52,18 +52,8 @@ rootProject.ext {
                     "com.squareup.okhttp3:okhttp-urlconnection:$okHttpVersion",
             okHttpLoggingInterceptor:
                     "com.squareup.okhttp3:logging-interceptor:$okHttpVersion",
-            playServices_full    :
-                    "com.google.android.gms:play-services:$playServicesVersion",
-            playServices_gcm     :
-                    "com.google.android.gms:play-services-gcm:$playServicesVersion",
-            playServices_maps    :
-                    "com.google.android.gms:play-services-maps:$playServicesVersion",
-            playServices_location:
-                    "com.google.android.gms:play-services-location:$playServicesVersion",
-            playServices_vision  :
-                    "com.google.android.gms:play-services-vision:$playServicesVersion",
             jodaTime  :
-                    "net.danlew:android.joda:$jodaVersion",
+                    "joda-time:joda-time:$jodaVersion",
             firebaseCore    :
                     "com.google.firebase:firebase-core:$firebaseCoreVersion",
             firebaseMessaging    :

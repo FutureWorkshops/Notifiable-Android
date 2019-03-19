@@ -1,3 +1,7 @@
+/*
+ * Copyright ©  2018 - 2019 FutureWorkshops. All rights reserved.
+ */
+
 apply plugin: 'com.android.application'
 apply from: '../android_commons.gradle'
 apply from: '../android_dependencies.gradle'
@@ -57,48 +61,20 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
-    implementation project(':library')
-
     def uiDependencies = rootProject.ext.uiDependencies
     def domainDependencies = rootProject.ext.domainDependencies
 
+    implementation project(':library')
+    
+    
     implementation domainDependencies.firebaseCore
     implementation domainDependencies.firebaseMessaging
-
-
+    
     implementation uiDependencies.appCompat
     implementation uiDependencies.designCompat
     implementation uiDependencies.butterKnife
     annotationProcessor uiDependencies.butterKnifeApt
 
 }
-
-/*
- * Copyright (c) 2018 Future Workshops. All rights reserved.
- */
-
-//task setupDevEnv << {
-//    println "dev setup"
-//
-//    if (file("../dev_credentials.properties").exists()) {
-//        def props = new Properties()
-//        file("../dev_credentials.properties").withInputStream {
-//            props.load(it)
-//        }
-//
-//        project['notifiable.server'] = props.getProperty('dev.notifiable.server')
-//        project['notifiable.client'] = props.getProperty('dev.notifiable.client')
-//        project['notifiable.secret'] = props.getProperty('dev.notifiable.secret')
-//
-//        println(project.property('notifiable.server'))
-//        println(project.property('notifiable.client'))
-//        println(project.property('notifiable.secret'))
-//
-//    }
-//}
-//
-//assemble.dependsOn setupDevEnv
 
 apply plugin: 'com.google.gms.google-services'

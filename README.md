@@ -9,7 +9,68 @@ Registering existing token for different user will result in token being reassig
 
 ## Setup
 
+Update your project's `build.gradle` file to include Jitpack
+
+```
+allprojects {
+ repositories {
+    jcenter()
+    maven { url "https://jitpack.io" }
+ }
+}
+```
+
+
+Update your app `build.gradle` file and add the Notifiable dependency
+```
+ implementation 'com.github.FutureWorkshops:Notifiable-Android:1.3.5'
+```
+
+PS: replace `1.3.5` with the lastest version available
+
+### Transitive dependencies
+
+The Notifiable SDK relies on other 3rd party libraries to function:
+-  `com.android.support:support-annotations:27.0.0`
+-  `joda-time:joda-time2.10.1`
+- `com.squareup.retrofit2:retrofit:2.3.0`
+- `com.squareup.retrofit2:converter-gson:2.3.0`
+- `com.squareup.retrofit2:converter-scalars:`
+- `com.squareup.okhttp3:okhttp-urlconnection:3.10.0` 
+- `com.squareup.okhttp3:logging-interceptor:3.10.0`
+
+
+#### Dependency conflict resolution
+
+##### 1. Exclude modules from Notifiable library
+
+You can exclude as many modules as you want:
+
+```
+ implementation ('com.github.FutureWorkshops:Notifiable-Android:1.3.4'){
+     exclude group: 'com.android.support', module:'support-annotations'
+     exclude group: 'joda-time', module:'joda-time'
+ }
+```
+
+
+##### 2. Force resolution of dependency
+
+You can resolve the conflict by specifying which dependecy version should be used by the entire app 
+
+```
+android {
+    configurations.all {
+        resolutionStrategy.force 'joda-time:joda-time2.10.1'
+    }
+}
+```
+
 ### Manually
+
+You can also download the `.aar` and use it directly but in this case you 
+will **not be able to manage transitive dependencies**!
+
 
 #### 1. Download the latest `.aar` from the *Releases* tab on github.
 
@@ -34,17 +95,13 @@ You are now ready to add the dependency to your application
 
 ```
 
-#### 4. Add ProGuard rule
+#### 5. Add ProGuard rule
 
 Add the following rule to your exising PProGuard setup
 
 ```
     -keep class com.futureworkshops.notifiable.model.** { *; }
 ```
-
-### Gradle
-
-Not available yet.
 
 ## Usage
 

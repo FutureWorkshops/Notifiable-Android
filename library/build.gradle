@@ -1,10 +1,11 @@
 /*
- * Copyright (c) 2018 Future Workshops. All rights reserved.
+ * Copyright ©  2018 - 2019 FutureWorkshops. All rights reserved.
  */
 
 apply plugin: 'com.android.library'
 apply from: '../android_commons.gradle'
 apply from: '../android_dependencies.gradle'
+apply from: '../deploy.gradle'
 
 android {
 
@@ -24,30 +25,6 @@ android {
     }
 
     libraryVariants.all { variant ->
-
-        if (variant.buildType.isDebuggable()) {
-            return; // Skip documentation for debug builds.
-        }
-        task("javadoc${variant.name.capitalize()}", type: Javadoc) {
-            title = 'Notifiable SDK'
-            // description = ''
-            source = variant.javaCompile.source
-            classpath += files(project.android.getBootClasspath())
-            classpath += files("${projectDir}/src/main/java/com/futureworkshops/notifiable/")
-            options {
-                overview "overview.html"
-                links "http://docs.oracle.com/javase/7/docs/api/"
-                linksOffline "http://d.android.com/reference","${android.sdkDirectory}/docs/reference"
-            }
-            exclude "**/internal/**"
-        }
-
-        task("bundleJavadoc${variant.name.capitalize()}", type: Jar) {
-            description "Bundles Javadoc into zip for $variant.name."
-            classifier = "javadoc"
-            from tasks["javadoc${variant.name.capitalize()}"]
-        }
-
         variant.outputs.all { output ->
             outputFileName = "NotifiableAndroidSDK-${variant.name}-${project.property('project.buildversion')}.${project.property('project.buildnumber')}.aar"
         }
@@ -57,13 +34,13 @@ android {
 
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     def uiDependencies = rootProject.ext.uiDependencies
     def domainDependencies = rootProject.ext.domainDependencies
 
     implementation uiDependencies.supportAnnotation
     
+    implementation domainDependencies.jodaTime
     implementation domainDependencies.gson
     implementation domainDependencies.retrofit
     implementation domainDependencies.retrofitConverterGson
