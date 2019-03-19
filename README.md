@@ -23,10 +23,10 @@ allprojects {
 
 Update your app `build.gradle` file and add the Notifiable dependency
 ```
- implementation 'com.github.FutureWorkshops:Notifiable-Android:1.3.4'
+ implementation 'com.github.FutureWorkshops:Notifiable-Android:1.3.5'
 ```
 
-PS: replace `1.3.4` with the lastest version available
+PS: replace `1.3.5` with the lastest version available
 
 ### Transitive dependencies
 
