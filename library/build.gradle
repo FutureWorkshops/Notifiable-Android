@@ -5,6 +5,7 @@
 apply plugin: 'com.android.library'
 apply from: '../android_commons.gradle'
 apply from: '../android_dependencies.gradle'
+apply from: '../deploy.gradle'
 
 android {
 
