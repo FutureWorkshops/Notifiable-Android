@@ -5,7 +5,7 @@
 apply plugin: 'com.github.dcendents.android-maven'
 
 group = 'com.futureworkshops.notifiable'
-version = project.property('project.buildversion')
+version = project.property('project.buildversion')+"."+project.property('project.buildnumber')
 
 task sourcesJar(type: Jar) {
     classifier = 'sources'
