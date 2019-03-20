@@ -9,7 +9,7 @@ Registering existing token for different user will result in token being reassig
 
 ## Setup
 
-Update your project's `build.gradle` file to include Jitpack
+1. Update your project's `build.gradle` file to include Jitpack
 
 ```
 allprojects {
@@ -21,7 +21,7 @@ allprojects {
 ```
 
 
-Update your app `build.gradle` file and add the Notifiable dependency
+2. Update your app `build.gradle` file and add the Notifiable dependency
 ```
  implementation 'com.github.FutureWorkshops:Notifiable-Android:1.3.5@aar'
 ```
@@ -29,6 +29,14 @@ Update your app `build.gradle` file and add the Notifiable dependency
 PS: replace `1.3.5` with the latest version available
 
 * Don't forget the **@aar**!*
+
+ 3. Add ProGuard rule
+
+Add the following rule to your exising ProGuard setup
+
+```
+    -keep class com.futureworkshops.notifiable.model.** { *; }
+```
 
 ### Transitive dependencies
 
@@ -75,15 +83,15 @@ android {
 }
 ```
 
-### Manually
+### Add Notifiable manually 
 
 You can also download the `.aar` and use it directly but in this case you 
 will **not be able to manage transitive dependencies**!
 
 
-#### 1. Download the latest `.aar` from the *Releases* tab on github.
+ 1. Download the latest `.aar` from the *Releases* tab on github.
 
-#### 2. Update your project `build.gradle`
+ 2. Update your project `build.gradle`
 Update the project *build.gradle* file (the one from the root of the project) 
 
 ```
@@ -95,7 +103,8 @@ allprojects {
     }
 }
 ```
-#### 3. Add dependency in your app's `build.gradle`
+
+ 3. Add dependency in your app's `build.gradle`
 
 You are now ready to add the dependency to your application
 
@@ -104,9 +113,20 @@ You are now ready to add the dependency to your application
 
 ```
 
-#### 5. Add ProGuard rule
+4. Add required dependencies
+```
+ implementation  'com.android.support:support-annotations:27.0.0'
+ implementation  'joda-time:joda-time2.10.1'
+ implementation  'com.squareup.retrofit2:retrofit:2.3.0'
+ implementation  'com.squareup.retrofit2:converter-gson:2.3.0'
+ implementation  'com.squareup.retrofit2:converter-scalars:'
+ implementation  'com.squareup.okhttp3:okhttp-urlconnection:3.10.0' 
+ implementation  'com.squareup.okhttp3:logging-interceptor:3.10.0'
+```
 
-Add the following rule to your exising PProGuard setup
+5. Add ProGuard rule
+
+Add the following rule to your exising ProGuard setup
 
 ```
     -keep class com.futureworkshops.notifiable.model.** { *; }
