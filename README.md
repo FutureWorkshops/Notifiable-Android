@@ -23,14 +23,16 @@ allprojects {
 
 Update your app `build.gradle` file and add the Notifiable dependency
 ```
- implementation 'com.github.FutureWorkshops:Notifiable-Android:1.3.5'
+ implementation 'com.github.FutureWorkshops:Notifiable-Android:1.3.5@aar'
 ```
 
-PS: replace `1.3.5` with the lastest version available
+PS: replace `1.3.5` with the latest version available
+
+* Don't forget the **@aar**!*
 
 ### Transitive dependencies
 
-The Notifiable SDK relies on other 3rd party libraries to function:
+The Notifiable SDK relies on other 3rd party libraries to function **that must be available at compile time**:
 -  `com.android.support:support-annotations:27.0.0`
 -  `joda-time:joda-time2.10.1`
 - `com.squareup.retrofit2:retrofit:2.3.0`
@@ -39,6 +41,13 @@ The Notifiable SDK relies on other 3rd party libraries to function:
 - `com.squareup.okhttp3:okhttp-urlconnection:3.10.0` 
 - `com.squareup.okhttp3:logging-interceptor:3.10.0`
 
+
+You can automatically add all of the above dependencies by using
+```
+  implementation ('com.github.FutureWorkshops:Notifiable-Android:1.3.5@aar'){
+        transitive true
+    }
+```    
 
 #### Dependency conflict resolution
 
