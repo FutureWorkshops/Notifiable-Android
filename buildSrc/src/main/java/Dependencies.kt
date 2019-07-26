@@ -26,7 +26,7 @@ object Versions {
     const val timber = "4.7.1"
 
     const val firebaseCoreVersion = "16.0.9"
-    const val firebaseMessagingVersion = "17.1.0"
+    const val firebaseMessagingVersion = "17.6.0"
 
 
     const val rxjava = "2.2.8"
@@ -35,6 +35,7 @@ object Versions {
     const val gsonVersion = "2.8.0"
     const val retrofit = "2.5.0"
     const val loggingInterceptor = "3.12.1"
+    const val okHttpVersion = "3.10.0"
 
     const val lifecycle = "2.0.0"
 
@@ -75,6 +76,7 @@ object Libraries {
     const val loggingInterceptor = "com.squareup.okhttp3:logging-interceptor:${Versions.loggingInterceptor}"
     const val retrofitGsonConverter = "com.squareup.retrofit2:converter-gson:${Versions.retrofit}"
     const val retrofitScalarConverter = "com.squareup.retrofit2:converter-scalars:${Versions.retrofit}"
+    const val okHttpUrlConnection = "com.squareup.okhttp3:okhttp-urlconnection:${Versions.okHttpVersion}"
 
     const val dagger = "com.google.dagger:dagger:${Versions.dagger}"
     const val daggerCompiler = "com.google.dagger:dagger-compiler:${Versions.dagger}"

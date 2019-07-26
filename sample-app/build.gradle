@@ -12,7 +12,7 @@ android {
         applicationId "com.futureworkshops.notifiable.sample"
         versionCode Integer.parseInt(project.property('project.buildnumber'))
         versionName project.property('project.buildversion')
-
+        multiDexEnabled true
     }
 
     buildTypes {
@@ -61,20 +61,13 @@ android {
 }
 
 dependencies {
-    def uiDependencies = rootProject.ext.uiDependencies
-    def domainDependencies = rootProject.ext.domainDependencies
 
     implementation project(':library')
     
+    implementation SupportLibraries.appCompatX
+    implementation SupportLibraries.material
     
-    implementation domainDependencies.firebaseCore
-    implementation domainDependencies.firebaseMessaging
-    
-    implementation uiDependencies.appCompat
-    implementation uiDependencies.designCompat
-    implementation uiDependencies.butterKnife
-    annotationProcessor uiDependencies.butterKnifeApt
 
 }
 
-//apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.gms.google-services'

@@ -1,11 +1,13 @@
 /*
- * Copyright (c) 2018 Future Workshops. All rights reserved.
+ * Copyright ©  2018 - 2019 FutureWorkshops. All rights reserved.
  */
 
 package com.futureworkshops.notifiable;
 
-import android.support.annotation.NonNull;
+
 import android.util.Base64;
+
+import androidx.annotation.NonNull;
 
 import com.futureworkshops.notifiable.model.NotifiableMessage;
 
@@ -26,9 +28,6 @@ import java.util.TimeZone;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-/**
- * Created by stelian on 23/03/2016.
- */
 public class Utils {
 
     private static final String httpDateFormat = "EEE, dd MMM yyyy HH:mm:ss";
@@ -41,11 +40,11 @@ public class Utils {
 
         // create Joda date time formatter that will append GMT when formatting dates
         DateTimeFormatter formatter = new DateTimeFormatterBuilder()
-            .appendPattern(httpDateFormat)
-            // append GMT if time difference is 0 but don't show hour difference otherwise
-            .appendTimeZoneOffset(" GMT", false, 2, 2)
-            .toFormatter()
-            .withLocale(new Locale("en", "US"));
+                .appendPattern(httpDateFormat)
+                // append GMT if time difference is 0 but don't show hour difference otherwise
+                .appendTimeZoneOffset(" GMT", false, 2, 2)
+                .toFormatter()
+                .withLocale(new Locale("en", "US"));
 
 
         // get the GMT timezone and use it when creating a new DateTime object
@@ -57,8 +56,8 @@ public class Utils {
     }
 
     public static String hmacSha1(@NonNull String value, @NonNull String key)
-        throws NoSuchAlgorithmException,
-        InvalidKeyException {
+            throws NoSuchAlgorithmException,
+            InvalidKeyException {
 
         SecretKeySpec secret = new SecretKeySpec(key.getBytes(), HMAC_SHA1);
         Mac mac = Mac.getInstance(HMAC_SHA1);

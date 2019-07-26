@@ -46,6 +46,9 @@ dependencies {
     implementation Libraries.rxjava
     implementation Libraries.rxAndroid
 
+    api Libraries.firebaseCore
+    api Libraries.firebaseMessaging
+
     implementation Libraries.joda
 
     implementation Libraries.retrofit
@@ -53,6 +56,7 @@ dependencies {
     implementation Libraries.retrofitGsonConverter
     implementation Libraries.retrofitScalarConverter
     implementation Libraries.loggingInterceptor
+    implementation Libraries.okHttpUrlConnection
     implementation Libraries.gson
 
 

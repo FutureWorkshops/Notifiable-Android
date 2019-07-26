@@ -1,13 +1,13 @@
 /*
- * Copyright (c) 2018 Future Workshops. All rights reserved.
+ * Copyright ©  2018 - 2019 FutureWorkshops. All rights reserved.
  */
 
 package com.futureworkshops.notifiable;
 
 
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.futureworkshops.notifiable.model.NotifiableCallback;
 import com.futureworkshops.notifiable.model.NotifiableDevice;
 import com.futureworkshops.notifiable.networking.RestManager;
@@ -15,9 +15,6 @@ import com.futureworkshops.notifiable.networking.RestManager;
 import java.util.HashMap;
 import java.util.Locale;
 
-/**
- * Created by stelian on 22/03/2016.
- */
 public class NotifiableManager {
     public static final String GOOGLE_CLOUD_MESSAGING_PROVIDER = "gcm";
 
