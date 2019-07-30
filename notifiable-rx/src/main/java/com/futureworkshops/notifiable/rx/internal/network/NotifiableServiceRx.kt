@@ -19,8 +19,8 @@ interface NotifiableServiceRx {
     @PATCH("$USER_API$VERSION$DEVICE_TOKENS/$DEVICE_ID_PATH_PARAM")
     fun updateDeviceInfo(
         @Path(DEVICE_ID) notifiableDeviceId: String,
-        @Body deviceInfo: String
-    ): Single<NotifiableDevice>
+        @Body deviceInfo: NotifiableRegisterRequesBody
+    ): Completable
 
     @Headers("Content-Type: application/json")
     @PATCH("$USER_API$VERSION$DEVICE_TOKENS/$DEVICE_ID_PATH_PARAM")

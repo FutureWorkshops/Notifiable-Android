@@ -50,7 +50,7 @@ class NotifiableManagerRx private constructor(builder: Builder) {
         deviceName: String? = null,
         userAlias: String? = null,
         locale: Locale? = null,
-        customProperties: HashMap<String, Any>? = null
+        customProperties: HashMap<String, String>? = null
     ): Single<NotifiableDevice> {
 
         val safeDeviceName = deviceName ?: Build.DEVICE
@@ -81,6 +81,43 @@ class NotifiableManagerRx private constructor(builder: Builder) {
 //                    incompleteDevice.customProperties
 //                )
 //            }
+    }
+
+    /**
+     * Update Notifiable device information. You need to specify at least one parameter .
+     *
+     * @param token update the FCM token
+     * @param userName update the name of the user associated with the device
+     * @param deviceName update the name of the device(default value is [Build.DEVICE])
+     * @param locale update the device locale
+     * @param customProperties update one or more custom device properties
+     */
+    fun updateDeviceInformation(
+        deviceId: String,
+        token: String? = null,
+        userName: String? = null,
+        deviceName: String? = null,
+        locale: Locale? = null,
+        customProperties: Map<String, String>? = null
+    ): Completable {
+        if (token.isNullOrBlank() &&
+            userName.isNullOrBlank() &&
+            deviceName.isNullOrBlank() &&
+            locale == null
+            && customProperties.isNullOrEmpty()
+        ) {
+            return Completable.error(RuntimeException("You need to specify at least one parameter to update"))
+        } else {
+            return notifiableApi.updateDeviceInformation(
+                deviceId,
+                token,
+                userName,
+                deviceName,
+                locale,
+                customProperties
+            )
+
+        }
     }
 
     /**

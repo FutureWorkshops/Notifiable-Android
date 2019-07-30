@@ -18,18 +18,18 @@ interface NotifiableApi {
         locale: Locale?,
         userAlias: String?,
         provider: String,
-        customProperties: Map<String, Any>?
+        customProperties: Map<String, String>?
     ): Single<NotifiableDevice>
 
 
     fun updateDeviceInformation(
         deviceId: String,
         token: String?,
-        username: String?,
+        userName: String?,
         deviceName: String?,
         locale: Locale?,
-        customProperties: Map<String, Any>?
-    ): Single<NotifiableDevice>
+        customProperties: Map<String, String>?
+    ): Completable
 
     fun unregisterToken(
         deviceId: String

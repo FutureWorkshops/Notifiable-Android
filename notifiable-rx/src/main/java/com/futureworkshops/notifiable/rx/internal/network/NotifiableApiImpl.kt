@@ -49,7 +49,7 @@ class NotifiableApiImpl(
         locale: Locale?,
         userAlias: String?,
         provider: String,
-        customProperties: Map<String, Any>?
+        customProperties: Map<String, String>?
     ): Single<NotifiableDevice> {
         try {
 
@@ -60,7 +60,8 @@ class NotifiableApiImpl(
                     provider,
                     userAlias,
                     locale?.language ?: DEFAULT_LANGUAGE,
-                    locale?.country ?: DEFAULT_COUNTRY
+                    locale?.country ?: DEFAULT_COUNTRY,
+                    properties = customProperties
                 )
             )
 
@@ -76,48 +77,28 @@ class NotifiableApiImpl(
     override fun updateDeviceInformation(
         deviceId: String,
         token: String?,
-        username: String?,
+        userName: String?,
         deviceName: String?,
         locale: Locale?,
-        customProperties: Map<String, Any>?
-    ): Single<NotifiableDevice> {
+        customProperties: Map<String, String>?
+    ): Completable {
         return try {
-            val paramObject = JSONObject()
-            val deviceTokenObject = JSONObject()
+            val requestBody = NotifiableRegisterRequesBody(
+                NotifiableDeviceRequestBody(
+                    deviceName,
+                    token,
+                    user = userName,
+                    language = locale?.language ?: DEFAULT_LANGUAGE,
+                    country = locale?.country ?: DEFAULT_COUNTRY,
+                    properties = customProperties
+                )
+            )
 
-            if (!username.isNullOrEmpty()) {
-                deviceTokenObject.put(NotifiableServiceRx.USER_ALIAS, username)
-            }
-
-            if (!deviceName.isNullOrEmpty()) {
-                deviceTokenObject.put(DEVICE_NAME, deviceName)
-            }
-
-            if (!customProperties.isNullOrEmpty()) {
-                deviceTokenObject.put(CUSTOM_PROPERTIES, JSONObject(customProperties).toString())
-            }
-
-            if (!token.isNullOrEmpty()) {
-                deviceTokenObject.put(TOKEN, token)
-            }
-
-            if (locale != null) {
-//                paramObject.put(
-//                    DEVICE_TOKEN,
-//                    populateJSONObject(
-//                        deviceTokenObject,
-//                        locale
-//                    )
-//                )
-            } else {
-                paramObject.put(DEVICE_TOKEN, deviceTokenObject)
-            }
-
-            restService.updateDeviceInfo(deviceId, paramObject.toString())
+            restService.updateDeviceInfo(deviceId, requestBody)
 
         } catch (e: JSONException) {
             Timber.e(e)
-            Single.error(e)
+            Completable.error(e)
         }
 
     }

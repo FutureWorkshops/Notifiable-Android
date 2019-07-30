@@ -430,73 +430,78 @@ class NotifiableActivity : AppCompatActivity(), View.OnClickListener {
             }
     }
 
+    @SuppressLint("CheckResult")
     private fun updateDeviceInfo(osVersion: String, emulator: String) {
         // create map with entered values
-        val vals = HashMap<String, Any>()
-        vals[Constants.OS_PROPERTY] = osVersion
-        vals[Constants.IS_EMULATOR_PROPERTY] = emulator
+        val customProperties = HashMap<String, String>()
+        customProperties[Constants.OS_PROPERTY] = osVersion
+        customProperties[Constants.IS_EMULATOR_PROPERTY] = emulator
 
-        val notifiableCallback = object : NotifiableCallback<NotifiableDevice> {
 
-            override fun onSuccess(ret: NotifiableDevice) {
-                showSnackbar("Updated device with id " + ret.id.toString())
-            }
-
-            override fun onError(error: String) {
-                showSnackbar(error)
-            }
-        }
-
-        mNotifiableManager!!.updateDeviceCustomProperties(
+        mNotifiableManagerRx.updateDeviceInformation(
             mDeviceId.toString(),
-            vals,
-            notifiableCallback
+            customProperties = customProperties
         )
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+
+                showSnackbar("Updated device properties")
+            },
+                { t ->
+                    Timber.e(t)
+                    showSnackbar(t.toString())
+                })
+
+
+//        val notifiableCallback = object : NotifiableCallback<NotifiableDevice> {
+//
+//            override fun onSuccess(ret: NotifiableDevice) {
+//                showSnackbar("Updated device with id " + ret.id.toString())
+//            }
+//
+//            override fun onError(error: String) {
+//                showSnackbar(error)
+//            }
+//        }
+//
+//        mNotifiableManager!!.updateDeviceCustomProperties(
+//            mDeviceId.toString(),
+//            customProperties,
+//            notifiableCallback
+//        )
     }
 
+    @SuppressLint("CheckResult")
     private fun updateDeviceName(name: String) {
-        val callback = object : NotifiableCallback<NotifiableDevice> {
-
-            override fun onSuccess(ret: NotifiableDevice) {
+        mNotifiableManagerRx.updateDeviceInformation(mDeviceId.toString(), deviceName = name)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
                 mDeviceName = name
                 showSnackbar("Updated device name to $name")
-            }
-
-            override fun onError(error: String) {
-                showSnackbar(error)
-            }
-        }
-
-        if (TextUtils.isEmpty(mDeviceUser)) {
-            mNotifiableManager!!.updateAnonymousDeviceName(mDeviceId.toString(), name, callback)
-        } else {
-            mNotifiableManager!!.updateDeviceName(
-                mDeviceUser!!,
-                mDeviceId.toString(),
-                name,
-                callback
-            )
-        }
+            },
+                { t ->
+                    Timber.e(t)
+                    showSnackbar(t.toString())
+                })
 
     }
 
+    @SuppressLint("CheckResult")
     private fun updateDeviceLocale(locale: Locale) {
-        val callback = object : NotifiableCallback<NotifiableDevice> {
-
-            override fun onSuccess(ret: NotifiableDevice) {
+        mNotifiableManagerRx.updateDeviceInformation(mDeviceId.toString(), locale = locale)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
                 mCurrentLocale = locale
 
                 showSnackbar("Updated device Locale to " + locale.displayName)
-            }
-
-            override fun onError(error: String) {
-                showSnackbar(error)
-            }
-        }
-
-        mNotifiableManager!!.updateDeviceLocale(mDeviceId.toString(), locale, callback)
-
-
+            },
+                { t ->
+                    Timber.e(t)
+                    showSnackbar(t.toString())
+                })
     }
 
     private fun unassignDevice() {
@@ -519,25 +524,22 @@ class NotifiableActivity : AppCompatActivity(), View.OnClickListener {
             })
     }
 
-    private fun assignDeviceToUser(userName: String) {
-        mNotifiableManager!!.assignDeviceToUser(
-            userName,
-            mDeviceName!!,
-            mGcmToken!!,
-            object : NotifiableCallback<NotifiableDevice> {
+    @SuppressLint("CheckResult")
+    private fun assignDeviceToUser(user: String) {
+        mNotifiableManagerRx.updateDeviceInformation(mDeviceId.toString(), userName = user)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                mDeviceUser = user
+                mState = NotifiableStates.REGISTERED_WITH_USER
+                updateUi()
 
-                override fun onSuccess(ret: NotifiableDevice) {
-                    mDeviceUser = userName
-                    mState = NotifiableStates.REGISTERED_WITH_USER
-                    updateUi()
-
-                    showSnackbar("Device was assigned to " + mDeviceUser!!)
-                }
-
-                override fun onError(error: String) {
-                    showSnackbar(error)
-                }
-            })
+                showSnackbar("Device was assigned to " + mDeviceUser!!)
+            },
+                { t ->
+                    Timber.e(t)
+                    showSnackbar(t.toString())
+                })
     }
 
     @SuppressLint("CheckResult")
