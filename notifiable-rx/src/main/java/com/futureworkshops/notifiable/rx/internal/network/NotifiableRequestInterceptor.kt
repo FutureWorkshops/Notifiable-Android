@@ -2,9 +2,11 @@
  * Copyright ©  2018 - 2019 FutureWorkshops. All rights reserved.
  */
 
-package com.futureworkshops.notifiable.rx.internal
+package com.futureworkshops.notifiable.rx.internal.network
 
 import android.text.TextUtils
+import com.futureworkshops.notifiable.rx.internal.applyNotifiableFormat
+import com.futureworkshops.notifiable.rx.internal.hmacSha1
 import com.futureworkshops.notifiable.rx.model.GenericResponse
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
@@ -24,7 +26,8 @@ class NotifiableRequestInterceptor(private val secret: String, private val clien
         try {
             val timestamp = Date().applyNotifiableFormat()
             val canonicalString = createCanonicalString(originalRequest, timestamp)
-            val encrypted = hmacSha1(canonicalString, secret)
+            val encrypted =
+                hmacSha1(canonicalString, secret)
 
             //  add headers
             val builder = originalRequest.newBuilder()

@@ -2,7 +2,7 @@
  * Copyright ©  2018 - 2019 FutureWorkshops. All rights reserved.
  */
 
-package com.futureworkshops.notifiable.rx.internal
+package com.futureworkshops.notifiable.rx.internal.network
 
 import com.futureworkshops.notifiable.rx.model.NotifiableDevice
 import io.reactivex.Completable
@@ -13,7 +13,7 @@ interface NotifiableServiceRx {
 
     @Headers("Content-Type: application/json")
     @POST(USER_API + VERSION + DEVICE_TOKENS)
-    fun registerDevice(@Body body: String): Single<NotifiableDevice>
+    fun registerDevice(@Body body: NotifiableRegisterRequesBody): Single<NotifiableDevice>
 
     @Headers("Content-Type: application/json")
     @PATCH("$USER_API$VERSION$DEVICE_TOKENS/$DEVICE_ID_PATH_PARAM")

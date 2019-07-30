@@ -2,7 +2,7 @@
  * Copyright ©  2018 - 2019 FutureWorkshops. All rights reserved.
  */
 
-package com.futureworkshops.notifiable.rx.internal
+package com.futureworkshops.notifiable.rx.internal.network
 
 import com.futureworkshops.notifiable.rx.model.NotifiableDevice
 import io.reactivex.Completable
@@ -17,7 +17,7 @@ interface NotifiableApi {
         deviceToken: String,
         locale: Locale?,
         userAlias: String?,
-        provider: String?,
+        provider: String,
         customProperties: Map<String, Any>?
     ): Single<NotifiableDevice>
 

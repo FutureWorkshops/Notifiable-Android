@@ -2,9 +2,9 @@
  * Copyright ©  2018 - 2019 FutureWorkshops. All rights reserved.
  */
 
-package com.futureworkshops.notifiable.rx.internal
+package com.futureworkshops.notifiable.rx.internal.network
 
-import com.futureworkshops.notifiable.rx.internal.NotifiableServiceRx.Companion.DEVICE_ID
+import com.futureworkshops.notifiable.rx.internal.network.NotifiableServiceRx.Companion.DEVICE_ID
 import com.futureworkshops.notifiable.rx.model.NotifiableDevice
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -48,31 +48,23 @@ class NotifiableApiImpl(
         deviceToken: String,
         locale: Locale?,
         userAlias: String?,
-        provider: String?,
+        provider: String,
         customProperties: Map<String, Any>?
     ): Single<NotifiableDevice> {
         try {
-            val paramObject = JSONObject()
-            val deviceTokenObject = JSONObject()
 
-            deviceTokenObject.put(DEVICE_NAME, deviceName)
-            deviceTokenObject.put(TOKEN, deviceToken)
-            deviceTokenObject.put(PROVIDER, provider)
+            val requestBody = NotifiableRegisterRequesBody(
+                NotifiableDeviceRequestBody(
+                    deviceName,
+                    deviceToken,
+                    provider,
+                    userAlias,
+                    locale?.language ?: DEFAULT_LANGUAGE,
+                    locale?.country ?: DEFAULT_COUNTRY
+                )
+            )
 
-            if (!userAlias.isNullOrEmpty()) {
-                deviceTokenObject.put(USER_ALIAS, userAlias)
-            }
-
-            if (!customProperties.isNullOrEmpty()) {
-                deviceTokenObject.put(CUSTOM_PROPERTIES, JSONObject(customProperties).toString())
-            }
-
-
-            if (locale != null) {
-                paramObject.put(DEVICE_TOKEN, populateJSONObject(deviceTokenObject, locale))
-            }
-
-            return restService.registerDevice(paramObject.toString())
+            return restService.registerDevice(requestBody)
 
         } catch (e: JSONException) {
             Timber.e(e)
@@ -110,7 +102,13 @@ class NotifiableApiImpl(
             }
 
             if (locale != null) {
-                paramObject.put(DEVICE_TOKEN, populateJSONObject(deviceTokenObject, locale))
+//                paramObject.put(
+//                    DEVICE_TOKEN,
+//                    populateJSONObject(
+//                        deviceTokenObject,
+//                        locale
+//                    )
+//                )
             } else {
                 paramObject.put(DEVICE_TOKEN, deviceTokenObject)
             }
@@ -239,6 +237,10 @@ class NotifiableApiImpl(
         const val DEVICE_NAME = "name"
         const val PROVIDER = "provider"
         const val TOKEN = "token"
+
+
+        private const val DEFAULT_LANGUAGE = "en"
+        private const val DEFAULT_COUNTRY = "us"
 
     }
 
