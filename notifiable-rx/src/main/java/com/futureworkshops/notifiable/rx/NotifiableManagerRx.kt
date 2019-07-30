@@ -193,7 +193,7 @@ class NotifiableManagerRx private constructor(builder: Builder) {
 
     companion object {
         const val PLAY_SERVICES_RESOLUTION_REQUEST = 9000
-        const val FCM_NOTIFICATION_PROVIDER = "fcm"
+        const val FCM_NOTIFICATION_PROVIDER = "gcm"
     }
 
     class Builder(val context: Context) {
