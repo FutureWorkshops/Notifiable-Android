@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Future Workshops. All rights reserved.
+ * Copyright ©  2018 - 2019 FutureWorkshops. All rights reserved.
  */
 
 package com.futureworkshops.notifiable.sample;
@@ -11,12 +11,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.design.widget.TextInputLayout;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.HapticFeedbackConstants;
@@ -25,12 +19,18 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import com.futureworkshops.notifiable.NotifiableManager;
 import com.futureworkshops.notifiable.model.NotifiableCallback;
 import com.futureworkshops.notifiable.model.NotifiableDevice;
 import com.futureworkshops.notifiable.model.NotifiableMessage;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.ArrayList;
@@ -38,11 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
-public class NotifiableActivity extends AppCompatActivity {
+public class NotifiableActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static final String TAG = NotifiableActivity.class.getSimpleName();
@@ -52,32 +48,16 @@ public class NotifiableActivity extends AppCompatActivity {
 
     private SharedPreferences mSharedPrefs;
 
-    @BindView(R.id.btn_register_with_name)
-    Button mRegisterNotifiableButton;
 
-    @BindView(R.id.btn_register_anonymously)
-    Button mRegisterAnonymousNotifiableButton;
-
-    @BindView(R.id.btn_update_device_info)
-    Button mUpdateDeviceInfoButton;
-
-    @BindView(R.id.btn_update_device_name)
-    Button mUpdateDeviceNameButton;
-
-    @BindView(R.id.btn_update_device_locale)
-    Button mUpdateDeviceLocaleButton;
-
-    @BindView(R.id.btn_assign_device_to_user)
-    Button mAssignToUserButton;
-
-    @BindView(R.id.btn_unassign_device_from_user)
-    Button mUnassignFromUserButton;
-
-    @BindView(R.id.btn_unregister_device)
-    Button mUnregisterDeviceButton;
-
-    @BindView(R.id.btn_mark_notification)
-    Button mOpenNotificationButton;
+    private Button mRegisterNotifiableButton;
+    private Button mRegisterAnonymousNotifiableButton;
+    private Button mUpdateDeviceInfoButton;
+    private Button mUpdateDeviceNameButton;
+    private Button mUpdateDeviceLocaleButton;
+    private Button mAssignToUserButton;
+    private Button mUnassignFromUserButton;
+    private Button mUnregisterDeviceButton;
+    private Button mOpenNotificationButton;
 
     private String mGcmToken;
     private int mDeviceId;
@@ -89,27 +69,54 @@ public class NotifiableActivity extends AppCompatActivity {
     private NotifiableStates mState;
     private Locale mCurrentLocale;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notifiable);
 
-        ButterKnife.bind(this);
+//        ButterKnife.bind(this);
+
+        mRegisterNotifiableButton = findViewById(R.id.btn_register_with_name);
+        mRegisterNotifiableButton.setOnClickListener(this);
+
+        mRegisterAnonymousNotifiableButton = findViewById(R.id.btn_register_anonymously);
+        mRegisterAnonymousNotifiableButton.setOnClickListener(this);
+
+        mUpdateDeviceInfoButton = findViewById(R.id.btn_update_device_info);
+        mUpdateDeviceInfoButton.setOnClickListener(this);
+
+        mUpdateDeviceNameButton = findViewById(R.id.btn_update_device_name);
+        mUpdateDeviceNameButton.setOnClickListener(this);
+
+        mUpdateDeviceLocaleButton = findViewById(R.id.btn_update_device_locale);
+        mUpdateDeviceLocaleButton.setOnClickListener(this);
+
+        mAssignToUserButton = findViewById(R.id.btn_assign_device_to_user);
+        mAssignToUserButton.setOnClickListener(this);
+
+        mUnassignFromUserButton = findViewById(R.id.btn_unassign_device_from_user);
+        mUnassignFromUserButton.setOnClickListener(this);
+
+        mUnregisterDeviceButton = findViewById(R.id.btn_unregister_device);
+        mUnregisterDeviceButton.setOnClickListener(this);
+
+        mOpenNotificationButton = findViewById(R.id.btn_mark_notification);
+        mOpenNotificationButton.setOnClickListener(this);
 
         mCurrentLocale = Locale.UK;
-
         mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-
         mDeviceId = mSharedPrefs.getInt(Constants.NOTIFIABLE_DEVICE_ID, -1);
 
         mNotifiableManager = NotifiableManager.newInstance(BuildConfig.NOTIFIABLE_SERVER,
-            BuildConfig.NOTIFIABLE_CLIENT_ID, BuildConfig.NOTIFIABLE_CLIENT_SECRET);
+                BuildConfig.NOTIFIABLE_CLIENT_ID, BuildConfig.NOTIFIABLE_CLIENT_SECRET);
 
         checkPlayServices();
 
         getTokenAsync();
 
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+
             @Override
             public void onReceive(Context context, Intent intent) {
                 getTokenAsync();
@@ -123,13 +130,14 @@ public class NotifiableActivity extends AppCompatActivity {
 
     private void getTokenAsync() {
         FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(
-            instanceIdResult -> mGcmToken = instanceIdResult.getToken()
+                instanceIdResult -> mGcmToken = instanceIdResult.getToken()
         );
     }
 
 
     @Override
     protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
         try {
             mLatestNotification = (NotifiableMessage) intent.getSerializableExtra(Constants.NOTIFICATION);
         } catch (Exception e) {
@@ -160,76 +168,69 @@ public class NotifiableActivity extends AppCompatActivity {
         super.onPause();
     }
 
-    @OnClick(R.id.btn_register_with_name)
-    void onRegisterDeviceClick(View v) {
+
+    /**
+     * Called when a view has been clicked.
+     *
+     * @param v The view that was clicked.
+     */
+    @Override
+    public void onClick(View v) {
         v.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
-        showRegisterDeviceDialog(false);
+
+        switch (v.getId()) {
+            case R.id.btn_register_with_name:
+                showRegisterDeviceDialog(false);
+                break;
+            case R.id.btn_register_anonymously:
+                showRegisterDeviceDialog(true);
+                break;
+            case R.id.btn_update_device_info:
+                showUpdateDeviceDialog();
+                break;
+            case R.id.btn_update_device_name:
+                showUpdateDeviceNameDialog();
+                break;
+            case R.id.btn_update_device_locale:
+                showUpdateDeviceLocaleDialog();
+                break;
+            case R.id.btn_assign_device_to_user:
+                showAssignDeviceDialog();
+                break;
+            case R.id.btn_unassign_device_from_user:
+                showUnassignDeviceConfirmationDialog();
+                break;
+            case R.id.btn_unregister_device:
+                showUnregisterDeviceDialog();
+                break;
+            case R.id.btn_mark_notification:
+                markNotificationClicked();
+                break;
+        }
     }
 
-    @OnClick(R.id.btn_register_anonymously)
-    void onRegisterAnonymousDeviceClick(View v) {
-        v.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
-        showRegisterDeviceDialog(true);
-    }
 
-    @OnClick(R.id.btn_update_device_info)
-    void onUpdateDeviceInfoClick(View v) {
-        v.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
-        showUpdateDeviceDialog();
-    }
-
-    @OnClick(R.id.btn_update_device_name)
-    void onUpdateDeviceNameClick(View v) {
-        v.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
-        showUpdateDeviceNameDialog();
-    }
-
-    @OnClick(R.id.btn_update_device_locale)
-    void onUpdateDeviceLocaleClick(View v) {
-        v.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
-        showUpdateDeviceLocaleDialog();
-    }
-
-    @OnClick(R.id.btn_unassign_device_from_user)
-    void onUnassignDeviceClick(View v) {
-        v.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
-        showUnassignDeviceConfirmationDialog();
-    }
-
-    @OnClick(R.id.btn_assign_device_to_user)
-    void onAssignDeviceClick(View v) {
-        v.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
-        showAssignDeviceDialog();
-    }
-
-    @OnClick(R.id.btn_unregister_device)
-    void onUnregisterDevice(View v) {
-        v.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
-        showUnregisterDeviceDialog();
-    }
-
-    @OnClick(R.id.btn_mark_notification)
-    void onMarkNotificationClicked(View v) {
-        v.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
-
+    private void markNotificationClicked() {
         mNotifiableManager.markNotificationOpened(String.valueOf(mLatestNotification.getNotificationId()),
-            String.valueOf(mDeviceId), new NotifiableCallback<Object>() {
-                @Override
-                public void onSuccess(Object ret) {
-                    showSnackbar("Notification marked as open");
-                    mLatestNotification = null;
-                    mOpenNotificationButton.setVisibility(View.GONE);
-                }
+                String.valueOf(mDeviceId), new NotifiableCallback<Object>() {
 
-                @Override
-                public void onError(String error) {
-                    showSnackbar(error);
-                }
-            });
+                    @Override
+                    public void onSuccess(Object ret) {
+                        showSnackbar("Notification marked as open");
+                        mLatestNotification = null;
+                        mOpenNotificationButton.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        showSnackbar(error);
+                    }
+                });
     }
 
     private void updateDeviceToken() {
         final NotifiableCallback<NotifiableDevice> callback = new NotifiableCallback<NotifiableDevice>() {
+
             @Override
             public void onSuccess(NotifiableDevice ret) {
                 showSnackbar("GCM token has been refreshed");
@@ -268,14 +269,14 @@ public class NotifiableActivity extends AppCompatActivity {
         }
 
         new AlertDialog.Builder(this)
-            .setTitle(getString(R.string.title_user_devices))
-            .setSingleChoiceItems(localeNames.toArray(new String[localeNames.size()]), selected, (dialog, which) -> {
-                int newSelection = ((AlertDialog) dialog).getListView().getCheckedItemPosition();
-                updateDeviceLocale(availableLocales[newSelection]);
-                dialog.dismiss();
-            })
-            .setPositiveButton(getString(R.string.action_ok), null)
-            .setNegativeButton(getString(R.string.action_cancel), null).show();
+                .setTitle(getString(R.string.title_user_devices))
+                .setSingleChoiceItems(localeNames.toArray(new String[localeNames.size()]), selected, (dialog, which) -> {
+                    int newSelection = ((AlertDialog) dialog).getListView().getCheckedItemPosition();
+                    updateDeviceLocale(availableLocales[newSelection]);
+                    dialog.dismiss();
+                })
+                .setPositiveButton(getString(R.string.action_ok), null)
+                .setNegativeButton(getString(R.string.action_cancel), null).show();
     }
 
     private void showRegisterDeviceDialog(final boolean isAnonymous) {
@@ -291,11 +292,11 @@ public class NotifiableActivity extends AppCompatActivity {
         }
 
         final AlertDialog dialog = new AlertDialog.Builder(this)
-            .setTitle(getString(R.string.title_register_device))
-            .setView(view)
-            .setCancelable(false)
-            .setPositiveButton(getString(R.string.action_ok), null)
-            .setNegativeButton(getString(R.string.action_cancel), null).show();
+                .setTitle(getString(R.string.title_register_device))
+                .setView(view)
+                .setCancelable(false)
+                .setPositiveButton(getString(R.string.action_ok), null)
+                .setNegativeButton(getString(R.string.action_cancel), null).show();
 
         //Overriding the handler immediately after showing the dialog in order to prevent it from dismissing on incomplete information
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
@@ -332,16 +333,16 @@ public class NotifiableActivity extends AppCompatActivity {
         final CheckBox isEmulator = view.findViewById(R.id.emulator_cb);
 
         new AlertDialog.Builder(this)
-            .setTitle(getString(R.string.title_update_device))
-            .setView(view)
-            .setCancelable(false)
-            .setPositiveButton(getString(R.string.action_ok), (dialog1, which) -> {
-                final String osVersion = os.getText().toString();
-                final String emulator = String.valueOf(isEmulator.isChecked());
+                .setTitle(getString(R.string.title_update_device))
+                .setView(view)
+                .setCancelable(false)
+                .setPositiveButton(getString(R.string.action_ok), (dialog1, which) -> {
+                    final String osVersion = os.getText().toString();
+                    final String emulator = String.valueOf(isEmulator.isChecked());
 
-                updateDeviceInfo(osVersion, emulator);
-            })
-            .setNegativeButton(getString(R.string.action_cancel), null).show();
+                    updateDeviceInfo(osVersion, emulator);
+                })
+                .setNegativeButton(getString(R.string.action_cancel), null).show();
 
     }
 
@@ -353,11 +354,11 @@ public class NotifiableActivity extends AppCompatActivity {
         inputEt.setHint(getString(R.string.lbl_device_name));
 
         final AlertDialog dialog = new AlertDialog.Builder(this)
-            .setTitle(getString(R.string.title_update_device))
-            .setView(view)
-            .setCancelable(false)
-            .setPositiveButton(getString(R.string.action_ok), null)
-            .setNegativeButton(getString(R.string.action_cancel), null).show();
+                .setTitle(getString(R.string.title_update_device))
+                .setView(view)
+                .setCancelable(false)
+                .setPositiveButton(getString(R.string.action_ok), null)
+                .setNegativeButton(getString(R.string.action_cancel), null).show();
 
         //Overriding the handler immediately after showing the dialog in order to prevent it from dismissing on incomplete information
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
@@ -373,11 +374,11 @@ public class NotifiableActivity extends AppCompatActivity {
 
     private void showUnassignDeviceConfirmationDialog() {
         new AlertDialog.Builder(this)
-            .setTitle(getString(R.string.title_unassign_device))
-            .setMessage(getString(R.string.msg_unassign_device_confirmation))
-            .setCancelable(false)
-            .setPositiveButton(getString(R.string.action_ok), (dialog1, which) -> unassignDevice())
-            .setNegativeButton(getString(R.string.action_cancel), null).show();
+                .setTitle(getString(R.string.title_unassign_device))
+                .setMessage(getString(R.string.msg_unassign_device_confirmation))
+                .setCancelable(false)
+                .setPositiveButton(getString(R.string.action_ok), (dialog1, which) -> unassignDevice())
+                .setNegativeButton(getString(R.string.action_cancel), null).show();
     }
 
     private void showAssignDeviceDialog() {
@@ -388,11 +389,11 @@ public class NotifiableActivity extends AppCompatActivity {
         inputEt.setHint(getString(R.string.lbl_user_name));
 
         final AlertDialog dialog = new AlertDialog.Builder(this)
-            .setTitle(getString(R.string.title_update_device))
-            .setView(view)
-            .setCancelable(false)
-            .setPositiveButton(getString(R.string.action_ok), null)
-            .setNegativeButton(getString(R.string.action_cancel), null).show();
+                .setTitle(getString(R.string.title_update_device))
+                .setView(view)
+                .setCancelable(false)
+                .setPositiveButton(getString(R.string.action_ok), null)
+                .setNegativeButton(getString(R.string.action_cancel), null).show();
 
         //Overriding the handler immediately after showing the dialog in order to prevent it from dismissing on incomplete information
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
@@ -409,59 +410,61 @@ public class NotifiableActivity extends AppCompatActivity {
     private void showUnregisterDeviceDialog() {
 
         new AlertDialog.Builder(this)
-            .setTitle(getString(R.string.title_unregister_device))
-            .setMessage(getString(R.string.msg_unregister_device_confirmation))
-            .setCancelable(false)
-            .setPositiveButton(getString(R.string.action_ok), (dialog, which) -> unregisterDevice())
-            .setNegativeButton(getString(R.string.action_cancel), null).show();
+                .setTitle(getString(R.string.title_unregister_device))
+                .setMessage(getString(R.string.msg_unregister_device_confirmation))
+                .setCancelable(false)
+                .setPositiveButton(getString(R.string.action_ok), (dialog, which) -> unregisterDevice())
+                .setNegativeButton(getString(R.string.action_cancel), null).show();
 
     }
 
     private void registerNotifiableDevice(final String user, final String deviceName) {
         if (TextUtils.isEmpty(user)) {
             mNotifiableManager.registerAnonymousDevice(deviceName, mGcmToken,
-                mCurrentLocale, NotifiableManager.GOOGLE_CLOUD_MESSAGING_PROVIDER,
-                new NotifiableCallback<NotifiableDevice>() {
-                    @Override
-                    public void onSuccess(NotifiableDevice ret) {
-                        mDeviceName = deviceName;
-                        mDeviceUser = user;
-                        mState = NotifiableStates.REGISTERED_ANONYMOUSLY;
-                        updateUi();
+                    mCurrentLocale, NotifiableManager.GOOGLE_CLOUD_MESSAGING_PROVIDER,
+                    new NotifiableCallback<NotifiableDevice>() {
 
-                        mDeviceId = ret.getId();
-                        mSharedPrefs.edit().putInt(Constants.NOTIFIABLE_DEVICE_ID, mDeviceId).apply();
-                        showSnackbar("Device registered with id " + String.valueOf(ret.getId()));
-                    }
+                        @Override
+                        public void onSuccess(NotifiableDevice ret) {
+                            mDeviceName = deviceName;
+                            mDeviceUser = user;
+                            mState = NotifiableStates.REGISTERED_ANONYMOUSLY;
+                            updateUi();
 
-                    @Override
-                    public void onError(String error) {
-                        mSharedPrefs.edit().putInt(Constants.NOTIFIABLE_DEVICE_ID, -1).apply();
-                        showSnackbar(error);
-                    }
-                });
+                            mDeviceId = ret.getId();
+                            mSharedPrefs.edit().putInt(Constants.NOTIFIABLE_DEVICE_ID, mDeviceId).apply();
+                            showSnackbar("Device registered with id " + String.valueOf(ret.getId()));
+                        }
+
+                        @Override
+                        public void onError(String error) {
+                            mSharedPrefs.edit().putInt(Constants.NOTIFIABLE_DEVICE_ID, -1).apply();
+                            showSnackbar(error);
+                        }
+                    });
         } else {
             mNotifiableManager.registerDevice(deviceName, mGcmToken, user,
-                mCurrentLocale, NotifiableManager.GOOGLE_CLOUD_MESSAGING_PROVIDER,
-                new NotifiableCallback<NotifiableDevice>() {
-                    @Override
-                    public void onSuccess(NotifiableDevice ret) {
-                        mDeviceUser = user;
-                        mDeviceName = deviceName;
-                        mState = NotifiableStates.REGISTERED_WITH_USER;
-                        updateUi();
+                    mCurrentLocale, NotifiableManager.GOOGLE_CLOUD_MESSAGING_PROVIDER,
+                    new NotifiableCallback<NotifiableDevice>() {
 
-                        mDeviceId = ret.getId();
-                        mSharedPrefs.edit().putInt(Constants.NOTIFIABLE_DEVICE_ID, mDeviceId).apply();
-                        showSnackbar("Device registered with id " + String.valueOf(ret.getId()));
-                    }
+                        @Override
+                        public void onSuccess(NotifiableDevice ret) {
+                            mDeviceUser = user;
+                            mDeviceName = deviceName;
+                            mState = NotifiableStates.REGISTERED_WITH_USER;
+                            updateUi();
 
-                    @Override
-                    public void onError(String error) {
-                        mSharedPrefs.edit().putInt(Constants.NOTIFIABLE_DEVICE_ID, -1).apply();
-                        showSnackbar(error);
-                    }
-                });
+                            mDeviceId = ret.getId();
+                            mSharedPrefs.edit().putInt(Constants.NOTIFIABLE_DEVICE_ID, mDeviceId).apply();
+                            showSnackbar("Device registered with id " + String.valueOf(ret.getId()));
+                        }
+
+                        @Override
+                        public void onError(String error) {
+                            mSharedPrefs.edit().putInt(Constants.NOTIFIABLE_DEVICE_ID, -1).apply();
+                            showSnackbar(error);
+                        }
+                    });
         }
 
     }
@@ -473,6 +476,7 @@ public class NotifiableActivity extends AppCompatActivity {
         vals.put(Constants.IS_EMULATOR_PROPERTY, emulator);
 
         NotifiableCallback<NotifiableDevice> notifiableCallback = new NotifiableCallback<NotifiableDevice>() {
+
             @Override
             public void onSuccess(NotifiableDevice ret) {
                 showSnackbar("Updated device with id " + String.valueOf(ret.getId()));
@@ -489,6 +493,7 @@ public class NotifiableActivity extends AppCompatActivity {
 
     private void updateDeviceName(final String name) {
         NotifiableCallback<NotifiableDevice> callback = new NotifiableCallback<NotifiableDevice>() {
+
             @Override
             public void onSuccess(NotifiableDevice ret) {
                 mDeviceName = name;
@@ -511,6 +516,7 @@ public class NotifiableActivity extends AppCompatActivity {
 
     private void updateDeviceLocale(final Locale locale) {
         NotifiableCallback<NotifiableDevice> callback = new NotifiableCallback<NotifiableDevice>() {
+
             @Override
             public void onSuccess(NotifiableDevice ret) {
                 mCurrentLocale = locale;
@@ -529,6 +535,7 @@ public class NotifiableActivity extends AppCompatActivity {
 
     private void unassignDevice() {
         mNotifiableManager.unassignDeviceFromUser(mDeviceName, mGcmToken, new NotifiableCallback<NotifiableDevice>() {
+
             @Override
             public void onSuccess(NotifiableDevice ret) {
                 mState = NotifiableStates.REGISTERED_ANONYMOUSLY;
@@ -545,8 +552,9 @@ public class NotifiableActivity extends AppCompatActivity {
         });
     }
 
-    private void assignDeviceToUser(@NonNull final String userName) {
+    private void assignDeviceToUser(final String userName) {
         mNotifiableManager.assignDeviceToUser(userName, mDeviceName, mGcmToken, new NotifiableCallback<NotifiableDevice>() {
+
             @Override
             public void onSuccess(NotifiableDevice ret) {
                 mDeviceUser = userName;
@@ -565,6 +573,7 @@ public class NotifiableActivity extends AppCompatActivity {
 
     private void unregisterDevice() {
         mNotifiableManager.unregisterDevice(String.valueOf(mDeviceId), new NotifiableCallback<Object>() {
+
             @Override
             public void onSuccess(Object ret) {
                 mSharedPrefs.edit().putInt(Constants.NOTIFIABLE_DEVICE_ID, -1).apply();
@@ -586,7 +595,7 @@ public class NotifiableActivity extends AppCompatActivity {
     private void registerReceiver() {
         if (!isReceiverRegistered) {
             LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
-                new IntentFilter(Constants.FIREBASE_NEW_TOKEN));
+                    new IntentFilter(Constants.FIREBASE_NEW_TOKEN));
             isReceiverRegistered = true;
         }
     }
@@ -643,7 +652,7 @@ public class NotifiableActivity extends AppCompatActivity {
         if (resultCode != ConnectionResult.SUCCESS) {
             if (apiAvailability.isUserResolvableError(resultCode)) {
                 apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
-                    .show();
+                        .show();
             } else {
                 Log.i(TAG, "This device is not supported.");
                 finish();
@@ -655,9 +664,9 @@ public class NotifiableActivity extends AppCompatActivity {
 
     private void showSnackbar(String message) {
         final View view = NotifiableActivity.this.getWindow().getDecorView()
-            .findViewById(android.R.id.content);
+                .findViewById(android.R.id.content);
         Snackbar.make(view,
-            message, Snackbar.LENGTH_SHORT).show();
+                message, Snackbar.LENGTH_SHORT).show();
     }
 
     private boolean checkUser(String inputValue, TextInputLayout inputLayout) {
@@ -679,4 +688,6 @@ public class NotifiableActivity extends AppCompatActivity {
             return true;
         }
     }
+
+
 }

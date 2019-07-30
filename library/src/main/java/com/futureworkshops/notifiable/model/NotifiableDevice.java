@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Future Workshops. All rights reserved.
+ * Copyright ©  2018 - 2019 FutureWorkshops. All rights reserved.
  */
 
 package com.futureworkshops.notifiable.model;
@@ -9,9 +9,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.HashMap;
 import java.util.Locale;
 
-/**
- * Created by stelian on 22/03/2016.
- */
+
 public class NotifiableDevice {
 
     private int id;
@@ -19,7 +17,7 @@ public class NotifiableDevice {
     private String user;
     private String token;
     private Locale locale;
-    private HashMap<String,Object> customProperties;
+    private HashMap<String, Object> customProperties;
 
 
     @SerializedName("created_at")

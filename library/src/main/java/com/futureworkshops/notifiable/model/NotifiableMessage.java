@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Future Workshops. All rights reserved.
+ * Copyright ©  2018 - 2019 FutureWorkshops. All rights reserved.
  */
 
 package com.futureworkshops.notifiable.model;
@@ -7,9 +7,7 @@ package com.futureworkshops.notifiable.model;
 import java.io.Serializable;
 import java.util.Map;
 
-/**
- * Created by stelian on 01/04/2016.
- */
+
 public class NotifiableMessage implements Serializable {
 
     private int notificationId;

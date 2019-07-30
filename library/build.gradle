@@ -4,7 +4,6 @@
 
 apply plugin: 'com.android.library'
 apply from: '../android_commons.gradle'
-apply from: '../android_dependencies.gradle'
 apply from: '../deploy.gradle'
 
 android {
@@ -35,19 +34,33 @@ android {
 
 dependencies {
 
-    def uiDependencies = rootProject.ext.uiDependencies
-    def domainDependencies = rootProject.ext.domainDependencies
+    // FIXME: remove after migrating to kotlin
+    implementation SupportLibraries.annotationX
 
-    implementation uiDependencies.supportAnnotation
-    
-    implementation domainDependencies.jodaTime
-    implementation domainDependencies.gson
-    implementation domainDependencies.retrofit
-    implementation domainDependencies.retrofitConverterGson
-    implementation domainDependencies.retrofitConverterScalars
-    implementation domainDependencies.okHttpUrlConnection
-    implementation domainDependencies.okHttpLoggingInterceptor
-    
-    testImplementation testDependencies.junit
-    androidTestImplementation testDependencies.testRunner
+    // domain
+    implementation Libraries.timber
+
+    implementation Libraries.kotlinStdLib
+    implementation Libraries.ktx
+
+    implementation Libraries.rxjava
+    implementation Libraries.rxAndroid
+
+    api Libraries.firebaseCore
+    api Libraries.firebaseMessaging
+
+    implementation Libraries.joda
+
+    implementation Libraries.retrofit
+    implementation Libraries.rxjavaAdapter
+    implementation Libraries.retrofitGsonConverter
+    implementation Libraries.retrofitScalarConverter
+    implementation Libraries.loggingInterceptor
+    implementation Libraries.okHttpUrlConnection
+    implementation Libraries.gson
+
+
+    // Test dependencies
+    testImplementation TestLibraries.junit
+    androidTestImplementation TestLibraries.testRunner
 }

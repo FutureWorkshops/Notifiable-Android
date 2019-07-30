@@ -1,12 +1,9 @@
 /*
- * Copyright (c) 2018 Future Workshops. All rights reserved.
+ * Copyright ©  2018 - 2019 FutureWorkshops. All rights reserved.
  */
 
 package com.futureworkshops.notifiable.model;
 
-/**
- * Created by stelian on 22/03/2016.
- */
 public interface NotifiableCallback<S> {
 
     void onSuccess(S ret);
