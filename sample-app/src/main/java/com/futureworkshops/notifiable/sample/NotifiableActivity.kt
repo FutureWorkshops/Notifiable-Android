@@ -18,9 +18,6 @@ import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.futureworkshops.notifiable.NotifiableManager
-import com.futureworkshops.notifiable.model.NotifiableCallback
-import com.futureworkshops.notifiable.model.NotifiableDevice
 import com.futureworkshops.notifiable.model.NotifiableMessage
 import com.futureworkshops.notifiable.rx.NotifiableManagerRx
 import com.google.android.gms.common.ConnectionResult
@@ -55,7 +52,6 @@ class NotifiableActivity : AppCompatActivity(), View.OnClickListener {
     private var mDeviceId: Int = 0
     private var mDeviceUser: String? = null
     private var mDeviceName: String? = null
-    private var mNotifiableManager: NotifiableManager? = null
     private lateinit var mNotifiableManagerRx: NotifiableManagerRx
     private var mLatestNotification: NotifiableMessage? = null
 
@@ -98,10 +94,6 @@ class NotifiableActivity : AppCompatActivity(), View.OnClickListener {
         mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this)
         mDeviceId = mSharedPrefs!!.getInt(Constants.NOTIFIABLE_DEVICE_ID, -1)
 
-        mNotifiableManager = NotifiableManager.newInstance(
-            BuildConfig.NOTIFIABLE_SERVER,
-            BuildConfig.NOTIFIABLE_CLIENT_ID, BuildConfig.NOTIFIABLE_CLIENT_SECRET
-        )
 
 
         mNotifiableManagerRx = NotifiableManagerRx.Builder(this)
@@ -112,10 +104,6 @@ class NotifiableActivity : AppCompatActivity(), View.OnClickListener {
             )
             .debug(BuildConfig.DEBUG)
             .build()
-
-//        checkPlayServices()
-//
-//        getTokenAsync()
 
         mRegistrationBroadcastReceiver = object : BroadcastReceiver() {
 
@@ -190,48 +178,37 @@ class NotifiableActivity : AppCompatActivity(), View.OnClickListener {
     }
 
 
+    @SuppressLint("CheckResult")
     private fun markNotificationClicked() {
-        mNotifiableManager!!.markNotificationOpened(mLatestNotification!!.notificationId.toString(),
-            mDeviceId.toString(), object : NotifiableCallback<Any> {
-
-                override fun onSuccess(ret: Any) {
-                    showSnackbar("Notification marked as open")
-                    mLatestNotification = null
-                    mOpenNotificationButton!!.visibility = View.GONE
-                }
-
-                override fun onError(error: String) {
-                    showSnackbar(error)
-                }
+        mNotifiableManagerRx.markNotificationOpened(
+            mLatestNotification!!.notificationId.toString(),
+            mDeviceId.toString()
+        )
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                showSnackbar("Notification marked as open")
+                mLatestNotification = null
+                mOpenNotificationButton!!.visibility = View.GONE
+            }, { t ->
+                Timber.e(t)
+                showSnackbar(t.toString())
             })
+
     }
 
+    @SuppressLint("CheckResult")
     private fun updateDeviceToken() {
-        val callback = object : NotifiableCallback<NotifiableDevice> {
-
-            override fun onSuccess(ret: NotifiableDevice) {
-                showSnackbar("GCM token has been refreshed")
-            }
-
-            override fun onError(error: String) {
-                showSnackbar(error)
-            }
-        }
-
-        if (TextUtils.isEmpty(mDeviceUser)) {
-            mNotifiableManager!!.updateDeviceToken(
-                mDeviceUser!!,
-                mDeviceId.toString(),
-                mGcmToken!!,
-                callback
-            )
-        } else {
-            mNotifiableManager!!.updateAnonymousDeviceToken(
-                mDeviceId.toString(),
-                mGcmToken!!,
-                callback
-            )
-        }
+        mNotifiableManagerRx.updateDeviceInformation(mDeviceId.toString(), token = mGcmToken)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                showSnackbar("FCM token has been refreshed")
+            },
+                { t ->
+                    Timber.e(t)
+                    showSnackbar(t.toString())
+                })
 
     }
 
@@ -505,23 +482,6 @@ class NotifiableActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun unassignDevice() {
-        mNotifiableManager!!.unassignDeviceFromUser(
-            mDeviceName!!,
-            mGcmToken!!,
-            object : NotifiableCallback<NotifiableDevice> {
-
-                override fun onSuccess(ret: NotifiableDevice) {
-                    mState = NotifiableStates.REGISTERED_ANONYMOUSLY
-                    updateUi()
-
-                    showSnackbar("Device was unassigned from " + mDeviceUser!!)
-                    mDeviceUser = null
-                }
-
-                override fun onError(error: String) {
-                    showSnackbar(error)
-                }
-            })
     }
 
     @SuppressLint("CheckResult")
