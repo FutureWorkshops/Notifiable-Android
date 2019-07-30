@@ -9,8 +9,6 @@ import com.futureworkshops.notifiable.rx.model.NotifiableMessage
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
 import org.joda.time.format.DateTimeFormatterBuilder
-import org.json.JSONException
-import org.json.JSONObject
 import java.security.InvalidKeyException
 import java.security.NoSuchAlgorithmException
 import java.util.*
@@ -22,8 +20,7 @@ private const val httpDateFormat = "EEE, dd MMM yyyy HH:mm:ss"
 private const val NOTIFICATION_ID = "n_id"
 private const val NOTIFICATION_TITLE = "title"
 private const val NOTIFICATION_MESSAGE = "message"
-private const val DEFAULT_LANGUAGE = "en"
-private const val DEFAULT_COUNTRY = "us"
+
 
 const val LANGUAGE = "language"
 const val COUNTRY = "country"
@@ -78,21 +75,21 @@ fun createNotificationFromMap(data: Map<String, String>): NotifiableMessage {
     return NotifiableMessage(notificationId, title, message, properties)
 }
 
-@Throws(JSONException::class)
-fun populateJSONObject(jsonObject: JSONObject, locale: Locale?): JSONObject {
-    val language: String
-    val country: String
-
-    if (locale == null) {
-        language = DEFAULT_LANGUAGE
-        country = DEFAULT_COUNTRY
-    } else {
-        language = locale.language
-        country = locale.country
-    }
-
-    jsonObject.put(LANGUAGE, language)
-    jsonObject.put(COUNTRY, country)
-
-    return jsonObject
-}
+//@Throws(JSONException::class)
+//fun populateJSONObject(jsonObject: JSONObject, locale: Locale?): JSONObject {
+//    val language: String
+//    val country: String
+//
+//    if (locale == null) {
+//        language = DEFAULT_LANGUAGE
+//        country = DEFAULT_COUNTRY
+//    } else {
+//        language = locale.language
+//        country = locale.country
+//    }
+//
+//    jsonObject.put(LANGUAGE, language)
+//    jsonObject.put(COUNTRY, country)
+//
+//    return jsonObject
+//}

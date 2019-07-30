@@ -5,13 +5,15 @@
 package com.futureworkshops.notifiable.rx
 
 import android.content.Context
-import com.futureworkshops.notifiable.rx.internal.NotifiableApiImpl
+import android.os.Build
+import com.futureworkshops.notifiable.rx.internal.network.NotifiableApiImpl
 import com.futureworkshops.notifiable.rx.model.NotifiableDevice
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.firebase.iid.FirebaseInstanceId
 import io.reactivex.Completable
 import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 import java.util.*
 
 class NotifiableManagerRx private constructor(builder: Builder) {
@@ -45,11 +47,13 @@ class NotifiableManagerRx private constructor(builder: Builder) {
      * @param customProperties  Set of properties to be associated to the device
      */
     fun registerDevice(
-        deviceName: String,
+        deviceName: String? = null,
         userAlias: String? = null,
         locale: Locale? = null,
         customProperties: HashMap<String, Any>? = null
     ): Single<NotifiableDevice> {
+
+        val safeDeviceName = deviceName ?: Build.DEVICE
 
         return hasPlayServices()
             .flatMap {
@@ -57,7 +61,7 @@ class NotifiableManagerRx private constructor(builder: Builder) {
             }
             .flatMap { fcmToken ->
                 notifiableApi.registerDevice(
-                    deviceName,
+                    safeDeviceName,
                     fcmToken,
                     locale,
                     userAlias,
@@ -65,6 +69,7 @@ class NotifiableManagerRx private constructor(builder: Builder) {
                     customProperties
                 )
             }
+            .subscribeOn(Schedulers.io())
 
 //            .map { incompleteDevice ->
 //                NotifiableDevice(
@@ -121,16 +126,19 @@ class NotifiableManagerRx private constructor(builder: Builder) {
      * ```
      */
     private fun hasPlayServices(): Single<Boolean> {
-        return Single.fromCallable {
+        return Single.create<Boolean> { emitter ->
             val apiAvailability = GoogleApiAvailability.getInstance()
             val resultCode = apiAvailability.isGooglePlayServicesAvailable(context)
 
             if (resultCode != ConnectionResult.SUCCESS) {
-                throw  RuntimeException("Google Play Services error: $resultCode")
+                emitter.onError(RuntimeException("Google Play Services error: $resultCode"))
             } else {
-                true
+                emitter.onSuccess(true)
             }
         }
+            .subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.io())
+
     }
 
     private fun getFirebaseToken(): Single<String> {
@@ -141,7 +149,8 @@ class NotifiableManagerRx private constructor(builder: Builder) {
                 }
                 .addOnFailureListener { t -> emitter.onError(t) }
         }
-
+            .subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.io())
     }
 
 
