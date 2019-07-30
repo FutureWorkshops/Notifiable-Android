@@ -30,6 +30,7 @@ import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.iid.FirebaseInstanceId
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 import java.util.*
 
 class NotifiableActivity : AppCompatActivity(), View.OnClickListener {
@@ -427,54 +428,6 @@ class NotifiableActivity : AppCompatActivity(), View.OnClickListener {
                 }
 
             }
-
-
-//        if (TextUtils.isEmpty(user)) {
-//            mNotifiableManager!!.registerAnonymousDevice(deviceName!!, mGcmToken!!,
-//                mCurrentLocale!!, NotifiableManager.GOOGLE_CLOUD_MESSAGING_PROVIDER,
-//                object : NotifiableCallback<NotifiableDevice> {
-//
-//                    override fun onSuccess(ret: NotifiableDevice) {
-//                        mDeviceName = deviceName
-//                        mDeviceUser = user
-//                        mState = NotifiableStates.REGISTERED_ANONYMOUSLY
-//                        updateUi()
-//
-//                        mDeviceId = ret.id
-//                        mSharedPrefs!!.edit().putInt(Constants.NOTIFIABLE_DEVICE_ID, mDeviceId)
-//                            .apply()
-//                        showSnackbar("Device registered with id " + ret.id.toString())
-//                    }
-//
-//                    override fun onError(error: String) {
-//                        mSharedPrefs!!.edit().putInt(Constants.NOTIFIABLE_DEVICE_ID, -1).apply()
-//                        showSnackbar(error)
-//                    }
-//                })
-//        } else {
-//            mNotifiableManager!!.registerDevice(deviceName, mGcmToken!!, user!!,
-//                mCurrentLocale!!, NotifiableManager.GOOGLE_CLOUD_MESSAGING_PROVIDER,
-//                object : NotifiableCallback<NotifiableDevice> {
-//
-//                    override fun onSuccess(ret: NotifiableDevice) {
-//                        mDeviceUser = user
-//                        mDeviceName = deviceName
-//                        mState = NotifiableStates.REGISTERED_WITH_USER
-//                        updateUi()
-//
-//                        mDeviceId = ret.id
-//                        mSharedPrefs!!.edit().putInt(Constants.NOTIFIABLE_DEVICE_ID, mDeviceId)
-//                            .apply()
-//                        showSnackbar("Device registered with id " + ret.id.toString())
-//                    }
-//
-//                    override fun onError(error: String) {
-//                        mSharedPrefs!!.edit().putInt(Constants.NOTIFIABLE_DEVICE_ID, -1).apply()
-//                        showSnackbar(error)
-//                    }
-//                })
-//        }
-
     }
 
     private fun updateDeviceInfo(osVersion: String, emulator: String) {
@@ -587,25 +540,25 @@ class NotifiableActivity : AppCompatActivity(), View.OnClickListener {
             })
     }
 
+    @SuppressLint("CheckResult")
     private fun unregisterDevice() {
-        mNotifiableManager!!.unregisterDevice(
-            mDeviceId.toString(),
-            object : NotifiableCallback<Any> {
+        mNotifiableManagerRx.unregisterDevice(mDeviceId.toString())
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                mSharedPrefs!!.edit().putInt(Constants.NOTIFIABLE_DEVICE_ID, -1).apply()
 
-                override fun onSuccess(ret: Any) {
-                    mSharedPrefs!!.edit().putInt(Constants.NOTIFIABLE_DEVICE_ID, -1).apply()
+                // hide buttons
+                mState = NotifiableStates.UNREGISTERED
+                updateUi()
 
-                    // hide buttons
-                    mState = NotifiableStates.UNREGISTERED
-                    updateUi()
+                showSnackbar("Device successfully removed ")
+            },
+                { t ->
+                    Timber.e(t)
+                    showSnackbar(t.toString())
+                })
 
-                    showSnackbar("Device successfully removed ")
-                }
-
-                override fun onError(error: String) {
-                    showSnackbar(error)
-                }
-            })
     }
 
     private fun registerReceiver() {
