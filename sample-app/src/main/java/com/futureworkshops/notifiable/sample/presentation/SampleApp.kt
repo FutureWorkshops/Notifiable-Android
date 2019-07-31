@@ -40,7 +40,7 @@ class SampleApp : DaggerApplication() {
     /**
      * Implementations should return an [AndroidInjector] for the concrete [ ]. Typically, that injector is a [dagger.Component].
      */
-    override fun applicationInjector(): AndroidInjector<out dagger.android.support.DaggerApplication> {
+    override fun applicationInjector(): AndroidInjector<out DaggerApplication> {
         val daggerAppComponent = DaggerAppComponent.builder()
             .application(this)
 //            .schedulerProvider(WorkerSchedulerProvider())

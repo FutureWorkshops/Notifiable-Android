@@ -29,7 +29,8 @@
         <activity
             android:name=".presentation.splashscreen.SplashscreenActivity"
             android:noHistory="true"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/Notifiable.Splashscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
