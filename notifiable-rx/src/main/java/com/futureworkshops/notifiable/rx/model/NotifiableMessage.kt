@@ -1,14 +1,12 @@
 /*
- * Copyright (c) 2018 Future Workshops. All rights reserved.
+ * Copyright ©  2018 - 2019 FutureWorkshops. All rights reserved.
  */
 
-package com.futureworkshops.notifiable.model
+package com.futureworkshops.notifiable.rx.model
 
 import java.io.Serializable
 
-/**
- * Created by stelian on 01/04/2016.
- */
+
 data class NotifiableMessage(
     val notificationId: Int,
     val title: String,

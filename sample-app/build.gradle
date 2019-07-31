@@ -3,6 +3,8 @@
  */
 
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-android'
 apply from: '../android_commons.gradle'
 apply from: '../android_dependencies.gradle'
 
@@ -63,10 +65,18 @@ android {
 dependencies {
 
     implementation project(':library')
-    
+    implementation project(':notifiable-rx')
+
+    implementation Libraries.kotlinStdLib
+    implementation Libraries.ktx
+
+    implementation Libraries.rxjava
+    implementation Libraries.rxAndroid
+
+    implementation Libraries.timber
+
     implementation SupportLibraries.appCompatX
     implementation SupportLibraries.material
-    
 
 }
 
