@@ -109,10 +109,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val deviceId = sharedPrefs!!.getInt(Constants.NOTIFIABLE_DEVICE_ID, -1)
 
 
-        notifiableManagerRx.markNotificationReceived(
-            notification.notificationId.toString(),
-            deviceId.toString()
-        )
+        notifiableManagerRx.markNotificationReceived(notification.notificationId.toString())
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({}, { t -> Timber.e(t) })

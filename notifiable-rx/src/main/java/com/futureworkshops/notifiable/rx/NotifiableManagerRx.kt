@@ -23,7 +23,7 @@ class NotifiableManagerRx private constructor(builder: Builder) {
     private var debug: Boolean = false
     private var notifiableApi: NotifiableApiImpl
     private var notifiableSecureStorage: NotifiableSecureStorage
-    private var registeredDevice: NotifiableDevice? = null
+    private var registeredDevice: NotifiableDevice?
 
     init {
         this.context = builder.context
@@ -110,7 +110,6 @@ class NotifiableManagerRx private constructor(builder: Builder) {
      * @param customProperties update one or more custom device properties
      */
     fun updateDeviceInformation(
-        deviceId: String,
         token: String? = null,
         userName: String? = null,
         deviceName: String? = null,
@@ -125,22 +124,23 @@ class NotifiableManagerRx private constructor(builder: Builder) {
         ) {
             return Completable.error(RuntimeException("You need to specify at least one parameter to update"))
         } else {
-            return notifiableApi.updateDeviceInformation(
-                deviceId,
-                token,
-                userName,
-                deviceName,
-                locale,
-                customProperties
-            ).doOnComplete {
-                token?.let { registeredDevice!!.token = token }
-                userName?.let { registeredDevice!!.user = userName }
-                deviceName?.let { registeredDevice!!.name = deviceName }
-                locale?.let { registeredDevice!!.locale = locale }
-                customProperties?.let { registeredDevice!!.customProperties = customProperties }
-                notifiableSecureStorage.saveNotifiableDevice(registeredDevice!!)
+            return callOnRegisteredDevice { deviceId ->
+                notifiableApi.updateDeviceInformation(
+                    deviceId,
+                    token,
+                    userName,
+                    deviceName,
+                    locale,
+                    customProperties
+                ).doOnComplete {
+                    token?.let { registeredDevice!!.token = token }
+                    userName?.let { registeredDevice!!.user = userName }
+                    deviceName?.let { registeredDevice!!.name = deviceName }
+                    locale?.let { registeredDevice!!.locale = locale }
+                    customProperties?.let { registeredDevice!!.customProperties = customProperties }
+                    notifiableSecureStorage.saveNotifiableDevice(registeredDevice!!)
+                }
             }
-
         }
     }
 
@@ -149,9 +149,11 @@ class NotifiableManagerRx private constructor(builder: Builder) {
      *
      * @param deviceId  id returned by the server after registering the device
      */
-    fun unregisterDevice(deviceId: String): Completable {
-        return notifiableApi.unregisterToken(deviceId)
-            .doOnComplete { notifiableSecureStorage.removeNotifiableDevice() }
+    fun unregisterDevice(): Completable {
+        return callOnRegisteredDevice { deviceId ->
+            notifiableApi.unregisterToken(deviceId)
+                .doOnComplete { notifiableSecureStorage.removeNotifiableDevice() }
+        }
     }
 
     /**
@@ -160,18 +162,21 @@ class NotifiableManagerRx private constructor(builder: Builder) {
      * @param notificationId id of the received notification
      * @param deviceId       id returned by the server after registering the device
      */
-    fun markNotificationReceived(notificationId: String, deviceId: String): Completable {
-        return notifiableApi.markNotificationAsReceived(deviceId, notificationId)
+    fun markNotificationReceived(notificationId: String): Completable {
+        return callOnRegisteredDevice { deviceId ->
+            notifiableApi.markNotificationAsReceived(deviceId, notificationId)
+        }
     }
 
     /**
      * This will notify the `Notifiable` application that a notification has been opened from a device.
      *
      * @param notificationId id of the received notification
-     * @param deviceId       id returned by the server after registering the device
      */
-    fun markNotificationOpened(notificationId: String, deviceId: String): Completable {
-        return notifiableApi.markNotificationAsOpened(deviceId, notificationId)
+    fun markNotificationOpened(notificationId: String): Completable {
+        return callOnRegisteredDevice { deviceId ->
+            notifiableApi.markNotificationAsOpened(deviceId, notificationId)
+        }
     }
 
     /**
@@ -215,9 +220,18 @@ class NotifiableManagerRx private constructor(builder: Builder) {
             .observeOn(Schedulers.io())
     }
 
+    /**
+     * Check that a registered device is available before calling the supplied code block.
+     *
+     * @return the result of the code block or [RuntimeException] if there's no registered device
+     */
+    private fun callOnRegisteredDevice(code: (String) -> Completable): Completable {
+        return registeredDevice?.let { code(it.id.toString()) }
+            ?: Completable.error(RuntimeException("No registered device found"))
+    }
+
 
     companion object {
-        const val PLAY_SERVICES_RESOLUTION_REQUEST = 9000
         const val FCM_NOTIFICATION_PROVIDER = "gcm"
     }
 
