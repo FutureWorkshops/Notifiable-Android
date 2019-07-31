@@ -4,12 +4,19 @@
 
 package com.futureworkshops.notifiable.sample.presentation
 
-import android.app.Application
-import com.futureworkshops.notifiable.sample.BuildConfig
+import DaggerAppComponent
+import com.futureworkshops.notifiable.sample.domain.dagger.AppInjector
+import com.futureworkshops.notifiable.sample.domain.model.Configuration
 import com.futureworkshops.notifiable.sample.timber.ReleaseLogTree
+import dagger.android.AndroidInjector
+import dagger.android.DaggerApplication
 import timber.log.Timber
+import javax.inject.Inject
 
-class SampleApp : Application() {
+class SampleApp : DaggerApplication() {
+
+    @Inject
+    lateinit var configuration: Configuration
 
     override fun onCreate() {
         super.onCreate()
@@ -21,11 +28,28 @@ class SampleApp : Application() {
 
 
     private fun initTimber() {
-        if (BuildConfig.DEBUG) {
+        if (configuration.logsEnabled) {
             Timber.plant(Timber.DebugTree())
         } else {
             Timber.plant(ReleaseLogTree())
 
         }
+    }
+
+
+    /**
+     * Implementations should return an [AndroidInjector] for the concrete [ ]. Typically, that injector is a [dagger.Component].
+     */
+    override fun applicationInjector(): AndroidInjector<out dagger.android.support.DaggerApplication> {
+        val daggerAppComponent = DaggerAppComponent.builder()
+            .application(this)
+//            .schedulerProvider(WorkerSchedulerProvider())
+            .build()
+
+        daggerAppComponent.inject(this)
+
+        AppInjector.init(this)
+
+        return daggerAppComponent
     }
 }
