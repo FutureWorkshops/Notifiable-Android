@@ -7,7 +7,7 @@ package com.futureworkshops.notifiable.sample.presentation
 import DaggerAppComponent
 import com.futureworkshops.notifiable.sample.domain.dagger.AppInjector
 import com.futureworkshops.notifiable.sample.domain.model.Configuration
-import com.futureworkshops.notifiable.sample.timber.ReleaseLogTree
+import com.futureworkshops.notifiable.sample.domain.timber.ReleaseLogTree
 import dagger.android.AndroidInjector
 import dagger.android.DaggerApplication
 import timber.log.Timber

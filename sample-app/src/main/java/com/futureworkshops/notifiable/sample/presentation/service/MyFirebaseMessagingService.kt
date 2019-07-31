@@ -2,7 +2,7 @@
  * Copyright ©  2018 - 2019 FutureWorkshops. All rights reserved.
  */
 
-package com.futureworkshops.notifiable.sample.service
+package com.futureworkshops.notifiable.sample.presentation.service
 
 
 import android.annotation.SuppressLint
@@ -19,9 +19,9 @@ import android.preference.PreferenceManager
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.futureworkshops.notifiable.Utils
-import com.futureworkshops.notifiable.model.NotifiableMessage
 import com.futureworkshops.notifiable.rx.NotifiableManagerRx
+import com.futureworkshops.notifiable.rx.internal.createNotificationFromMap
+import com.futureworkshops.notifiable.rx.model.NotifiableMessage
 import com.futureworkshops.notifiable.sample.BuildConfig
 import com.futureworkshops.notifiable.sample.Constants
 import com.futureworkshops.notifiable.sample.NotifiableActivity
@@ -76,7 +76,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
      * @param data GCM message received.
      */
     private fun sendNotification(data: Map<String, String>) {
-        val notification = Utils.createNotificationFromMap(data)
+        val notification = createNotificationFromMap(data)
 
         markNotificationAsReceived(notification)
 

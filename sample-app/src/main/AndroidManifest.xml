@@ -36,8 +36,7 @@
         </activity>
 
 
-        <service
-            android:name=".service.MyFirebaseMessagingService">
+        <service android:name="com.futureworkshops.notifiable.sample.presentation.service.MyFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>

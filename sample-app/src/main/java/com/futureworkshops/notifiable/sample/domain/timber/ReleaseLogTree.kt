@@ -2,7 +2,7 @@
  * Copyright ©  2018 - 2019 FutureWorkshops. All rights reserved.
  */
 
-package com.futureworkshops.notifiable.sample.timber
+package com.futureworkshops.notifiable.sample.domain.timber
 
 import android.util.Log
 
