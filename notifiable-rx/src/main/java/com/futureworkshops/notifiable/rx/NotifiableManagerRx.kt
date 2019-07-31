@@ -7,6 +7,8 @@ package com.futureworkshops.notifiable.rx
 import android.content.Context
 import android.os.Build
 import com.futureworkshops.notifiable.rx.internal.network.NotifiableApiImpl
+import com.futureworkshops.notifiable.rx.internal.storage.NotifiableSecureStorage
+import com.futureworkshops.notifiable.rx.internal.storage.SecureStoreProvider
 import com.futureworkshops.notifiable.rx.model.NotifiableDevice
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
@@ -17,11 +19,11 @@ import io.reactivex.schedulers.Schedulers
 import java.util.*
 
 class NotifiableManagerRx private constructor(builder: Builder) {
-
     private var context: Context
     private var debug: Boolean = false
     private var notifiableApi: NotifiableApiImpl
-
+    private var notifiableSecureStorage: NotifiableSecureStorage
+    private var registeredDevice: NotifiableDevice? = null
 
     init {
         this.context = builder.context
@@ -34,6 +36,9 @@ class NotifiableManagerRx private constructor(builder: Builder) {
             this.debug
         )
 
+        this.notifiableSecureStorage = SecureStoreProvider(this.context).getSecureKeyStore()
+
+        this.registeredDevice = notifiableSecureStorage.getRegisteredDevice()
     }
 
     /**
@@ -55,11 +60,22 @@ class NotifiableManagerRx private constructor(builder: Builder) {
 
         val safeDeviceName = deviceName ?: Build.DEVICE
 
+        val tempDevice = NotifiableDevice(
+            -1,
+            safeDeviceName,
+            userAlias ?: "",
+            "",
+            locale ?: Locale.getDefault(),
+            customProperties ?: emptyMap()
+        )
+
         return hasPlayServices()
             .flatMap {
                 getFirebaseToken()
             }
             .flatMap { fcmToken ->
+                tempDevice.token = fcmToken
+
                 notifiableApi.registerDevice(
                     safeDeviceName,
                     fcmToken,
@@ -69,18 +85,19 @@ class NotifiableManagerRx private constructor(builder: Builder) {
                     customProperties
                 )
             }
+            .doOnError {
+                // delete local device if registration failed
+                registeredDevice = null
+                notifiableSecureStorage.removeNotifiableDevice()
+            }
+            .map { incompleteDevice ->
+                tempDevice.id = incompleteDevice.id
+                registeredDevice = tempDevice
+                notifiableSecureStorage.saveNotifiableDevice(registeredDevice!!)
+                registeredDevice!!
+            }
             .subscribeOn(Schedulers.io())
 
-//            .map { incompleteDevice ->
-//                NotifiableDevice(
-//                    incompleteDevice.id,
-//                    deviceName,
-//                    userAlias ?: "",
-//                    deviceToken,
-//                    locale,
-//                    incompleteDevice.customProperties
-//                )
-//            }
     }
 
     /**
