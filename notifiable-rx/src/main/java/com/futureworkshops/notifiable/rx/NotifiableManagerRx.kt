@@ -46,7 +46,7 @@ class NotifiableManagerRx private constructor(builder: Builder) {
      *
      * The Firebase Cloud Messaging token is obtained automatically.
      *
-     * @param deviceName the name of the device, can be anything
+     * @param deviceName the name of the device, defaults to [Build.DEVICE]
      * @param userAlias  the name of the user you want to associate the device to
      * @param locale     locale of the device
      * @param customProperties  Set of properties to be associated to the device
@@ -98,6 +98,16 @@ class NotifiableManagerRx private constructor(builder: Builder) {
             }
             .subscribeOn(Schedulers.io())
 
+    }
+
+    /**
+     * Get the registered [NotifiableDevice].
+     *
+     * @return the [NotifiableDevice] or a [RuntimeException] if there is no device
+     */
+    fun getRegisteredDevice(): Single<NotifiableDevice> {
+        return registeredDevice?.let { Single.just(it) }
+            ?: Single.error(RuntimeException("No registered device found"))
     }
 
     /**
