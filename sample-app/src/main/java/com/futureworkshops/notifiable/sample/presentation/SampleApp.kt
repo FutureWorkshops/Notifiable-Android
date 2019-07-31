@@ -2,9 +2,10 @@
  * Copyright ©  2018 - 2019 FutureWorkshops. All rights reserved.
  */
 
-package com.futureworkshops.notifiable.sample
+package com.futureworkshops.notifiable.sample.presentation
 
 import android.app.Application
+import com.futureworkshops.notifiable.sample.BuildConfig
 import com.futureworkshops.notifiable.sample.timber.ReleaseLogTree
 import timber.log.Timber
 
