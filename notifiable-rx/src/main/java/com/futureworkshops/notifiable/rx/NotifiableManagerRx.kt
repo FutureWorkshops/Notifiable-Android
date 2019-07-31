@@ -132,7 +132,14 @@ class NotifiableManagerRx private constructor(builder: Builder) {
                 deviceName,
                 locale,
                 customProperties
-            )
+            ).doOnComplete {
+                token?.let { registeredDevice!!.token = token }
+                userName?.let { registeredDevice!!.user = userName }
+                deviceName?.let { registeredDevice!!.name = deviceName }
+                locale?.let { registeredDevice!!.locale = locale }
+                customProperties?.let { registeredDevice!!.customProperties = customProperties }
+                notifiableSecureStorage.saveNotifiableDevice(registeredDevice!!)
+            }
 
         }
     }
