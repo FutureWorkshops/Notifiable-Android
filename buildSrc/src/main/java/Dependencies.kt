@@ -28,6 +28,8 @@ object Versions {
     const val firebaseCoreVersion = "16.0.9"
     const val firebaseMessagingVersion = "17.6.0"
 
+    const val securedPreferenceStoreVersion = "0.7.4"
+    const val jetpackSecurityVersion = "1.0.0-alpha02"
 
     const val rxjava = "2.2.8"
     const val rxAndroidVersion = "2.0.2"
@@ -84,6 +86,13 @@ object Libraries {
     const val daggerAndroid = "com.google.dagger:dagger-android:${Versions.dagger}"
     const val daggerAndroidSupport = "com.google.dagger:dagger-android-support:${Versions.dagger}"
     const val daggerAndroidProcessor = "com.google.dagger:dagger-android-processor:${Versions.dagger}"
+
+    const val securedPreferenceStore =
+        "online.devliving:securedpreferencestore:${Versions.securedPreferenceStoreVersion}"
+    const val jetpackSecurity =
+        "androidx.security:security-crypto:${Versions.jetpackSecurityVersion}"
+
+
 
 
 }

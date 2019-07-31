@@ -54,6 +54,7 @@ dependencies {
     api Libraries.firebaseMessaging
 
     implementation Libraries.joda
+    implementation Libraries.jetpackSecurity
 
     implementation Libraries.retrofit
     implementation Libraries.rxjavaAdapter
