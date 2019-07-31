@@ -6,6 +6,7 @@ package com.futureworkshops.notifiable.rx
 
 import android.content.Context
 import android.os.Build
+import com.futureworkshops.notifiable.rx.internal.GooglePlayServicesException
 import com.futureworkshops.notifiable.rx.internal.network.NotifiableApiImpl
 import com.futureworkshops.notifiable.rx.internal.storage.NotifiableSecureStorage
 import com.futureworkshops.notifiable.rx.internal.storage.SecureStoreProvider
@@ -50,6 +51,8 @@ class NotifiableManagerRx private constructor(builder: Builder) {
      * @param userAlias  the name of the user you want to associate the device to
      * @param locale     locale of the device
      * @param customProperties  Set of properties to be associated to the device
+     *
+     * @throws [GooglePlayServicesException] if play services are not available
      */
     fun registerDevice(
         deviceName: String? = null,
@@ -192,15 +195,7 @@ class NotifiableManagerRx private constructor(builder: Builder) {
     /**
      * Check if the device has Google Play services.
      *
-     * If any error is thrown, you can use GoogleApiAvailability to show an error dialog:
-     *
-     * ```
-     * val apiAvailability = GoogleApiAvailability.getInstance()
-     * if (apiAvailability.isUserResolvableError(resultCode)) {
-    apiAvailability.getErrorDialog(activity,resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
-    .show()
-    }
-     * ```
+     * @throws [GooglePlayServicesException]
      */
     private fun hasPlayServices(): Single<Boolean> {
         return Single.create<Boolean> { emitter ->
@@ -208,7 +203,7 @@ class NotifiableManagerRx private constructor(builder: Builder) {
             val resultCode = apiAvailability.isGooglePlayServicesAvailable(context)
 
             if (resultCode != ConnectionResult.SUCCESS) {
-                emitter.onError(RuntimeException("Google Play Services error: $resultCode"))
+                emitter.onError(GooglePlayServicesException(resultCode))
             } else {
                 emitter.onSuccess(true)
             }
