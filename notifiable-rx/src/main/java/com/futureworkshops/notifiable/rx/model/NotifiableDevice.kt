@@ -14,7 +14,7 @@ data class NotifiableDevice(
     var user: String,
     var token: String,
     var locale: Locale,
-    var customProperties: Map<String, Any> = emptyMap(),
+    var customProperties: Map<String, String> = emptyMap(),
     @SerializedName("created_at") var createdAt: String = ""
 )
 
