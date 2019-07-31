@@ -151,6 +151,7 @@ class NotifiableManagerRx private constructor(builder: Builder) {
      */
     fun unregisterDevice(deviceId: String): Completable {
         return notifiableApi.unregisterToken(deviceId)
+            .doOnComplete { notifiableSecureStorage.removeNotifiableDevice() }
     }
 
     /**
