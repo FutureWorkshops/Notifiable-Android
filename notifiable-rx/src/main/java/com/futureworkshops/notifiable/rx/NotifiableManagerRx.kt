@@ -6,7 +6,10 @@ package com.futureworkshops.notifiable.rx
 
 import android.content.Context
 import android.os.Build
+import com.futureworkshops.notifiable.rx.internal.GooglePlayServicesException
 import com.futureworkshops.notifiable.rx.internal.network.NotifiableApiImpl
+import com.futureworkshops.notifiable.rx.internal.storage.NotifiableSecureStorage
+import com.futureworkshops.notifiable.rx.internal.storage.SecureStoreProvider
 import com.futureworkshops.notifiable.rx.model.NotifiableDevice
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
@@ -17,11 +20,11 @@ import io.reactivex.schedulers.Schedulers
 import java.util.*
 
 class NotifiableManagerRx private constructor(builder: Builder) {
-
     private var context: Context
     private var debug: Boolean = false
     private var notifiableApi: NotifiableApiImpl
-
+    private var notifiableSecureStorage: NotifiableSecureStorage
+    private var registeredDevice: NotifiableDevice?
 
     init {
         this.context = builder.context
@@ -34,6 +37,9 @@ class NotifiableManagerRx private constructor(builder: Builder) {
             this.debug
         )
 
+        this.notifiableSecureStorage = SecureStoreProvider(this.context).getSecureKeyStore()
+
+        this.registeredDevice = notifiableSecureStorage.getRegisteredDevice()
     }
 
     /**
@@ -41,10 +47,12 @@ class NotifiableManagerRx private constructor(builder: Builder) {
      *
      * The Firebase Cloud Messaging token is obtained automatically.
      *
-     * @param deviceName the name of the device, can be anything
+     * @param deviceName the name of the device, defaults to [Build.DEVICE]
      * @param userAlias  the name of the user you want to associate the device to
      * @param locale     locale of the device
      * @param customProperties  Set of properties to be associated to the device
+     *
+     * @throws [GooglePlayServicesException] if play services are not available
      */
     fun registerDevice(
         deviceName: String? = null,
@@ -55,11 +63,22 @@ class NotifiableManagerRx private constructor(builder: Builder) {
 
         val safeDeviceName = deviceName ?: Build.DEVICE
 
+        val tempDevice = NotifiableDevice(
+            -1,
+            safeDeviceName,
+            userAlias ?: "",
+            "",
+            locale ?: Locale.getDefault(),
+            customProperties ?: emptyMap()
+        )
+
         return hasPlayServices()
             .flatMap {
                 getFirebaseToken()
             }
             .flatMap { fcmToken ->
+                tempDevice.token = fcmToken
+
                 notifiableApi.registerDevice(
                     safeDeviceName,
                     fcmToken,
@@ -69,18 +88,29 @@ class NotifiableManagerRx private constructor(builder: Builder) {
                     customProperties
                 )
             }
+            .doOnError {
+                // delete local device if registration failed
+                registeredDevice = null
+                notifiableSecureStorage.removeNotifiableDevice()
+            }
+            .map { incompleteDevice ->
+                tempDevice.id = incompleteDevice.id
+                registeredDevice = tempDevice
+                notifiableSecureStorage.saveNotifiableDevice(registeredDevice!!)
+                registeredDevice!!
+            }
             .subscribeOn(Schedulers.io())
 
-//            .map { incompleteDevice ->
-//                NotifiableDevice(
-//                    incompleteDevice.id,
-//                    deviceName,
-//                    userAlias ?: "",
-//                    deviceToken,
-//                    locale,
-//                    incompleteDevice.customProperties
-//                )
-//            }
+    }
+
+    /**
+     * Get the registered [NotifiableDevice].
+     *
+     * @return the [NotifiableDevice] or a [RuntimeException] if there is no device
+     */
+    fun getRegisteredDevice(): Single<NotifiableDevice> {
+        return registeredDevice?.let { Single.just(it) }
+            ?: Single.error(RuntimeException("No registered device found"))
     }
 
     /**
@@ -93,7 +123,6 @@ class NotifiableManagerRx private constructor(builder: Builder) {
      * @param customProperties update one or more custom device properties
      */
     fun updateDeviceInformation(
-        deviceId: String,
         token: String? = null,
         userName: String? = null,
         deviceName: String? = null,
@@ -108,15 +137,23 @@ class NotifiableManagerRx private constructor(builder: Builder) {
         ) {
             return Completable.error(RuntimeException("You need to specify at least one parameter to update"))
         } else {
-            return notifiableApi.updateDeviceInformation(
-                deviceId,
-                token,
-                userName,
-                deviceName,
-                locale,
-                customProperties
-            )
-
+            return callOnRegisteredDevice { deviceId ->
+                notifiableApi.updateDeviceInformation(
+                    deviceId,
+                    token,
+                    userName,
+                    deviceName,
+                    locale,
+                    customProperties
+                ).doOnComplete {
+                    token?.let { registeredDevice!!.token = token }
+                    userName?.let { registeredDevice!!.user = userName }
+                    deviceName?.let { registeredDevice!!.name = deviceName }
+                    locale?.let { registeredDevice!!.locale = locale }
+                    customProperties?.let { registeredDevice!!.customProperties = customProperties }
+                    notifiableSecureStorage.saveNotifiableDevice(registeredDevice!!)
+                }
+            }
         }
     }
 
@@ -125,8 +162,11 @@ class NotifiableManagerRx private constructor(builder: Builder) {
      *
      * @param deviceId  id returned by the server after registering the device
      */
-    fun unregisterDevice(deviceId: String): Completable {
-        return notifiableApi.unregisterToken(deviceId)
+    fun unregisterDevice(): Completable {
+        return callOnRegisteredDevice { deviceId ->
+            notifiableApi.unregisterToken(deviceId)
+                .doOnComplete { notifiableSecureStorage.removeNotifiableDevice() }
+        }
     }
 
     /**
@@ -135,32 +175,27 @@ class NotifiableManagerRx private constructor(builder: Builder) {
      * @param notificationId id of the received notification
      * @param deviceId       id returned by the server after registering the device
      */
-    fun markNotificationReceived(notificationId: String, deviceId: String): Completable {
-        return notifiableApi.markNotificationAsReceived(deviceId, notificationId)
+    fun markNotificationReceived(notificationId: String): Completable {
+        return callOnRegisteredDevice { deviceId ->
+            notifiableApi.markNotificationAsReceived(deviceId, notificationId)
+        }
     }
 
     /**
      * This will notify the `Notifiable` application that a notification has been opened from a device.
      *
      * @param notificationId id of the received notification
-     * @param deviceId       id returned by the server after registering the device
      */
-    fun markNotificationOpened(notificationId: String, deviceId: String): Completable {
-        return notifiableApi.markNotificationAsOpened(deviceId, notificationId)
+    fun markNotificationOpened(notificationId: String): Completable {
+        return callOnRegisteredDevice { deviceId ->
+            notifiableApi.markNotificationAsOpened(deviceId, notificationId)
+        }
     }
 
     /**
      * Check if the device has Google Play services.
      *
-     * If any error is thrown, you can use GoogleApiAvailability to show an error dialog:
-     *
-     * ```
-     * val apiAvailability = GoogleApiAvailability.getInstance()
-     * if (apiAvailability.isUserResolvableError(resultCode)) {
-    apiAvailability.getErrorDialog(activity,resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
-    .show()
-    }
-     * ```
+     * @throws [GooglePlayServicesException]
      */
     private fun hasPlayServices(): Single<Boolean> {
         return Single.create<Boolean> { emitter ->
@@ -168,7 +203,7 @@ class NotifiableManagerRx private constructor(builder: Builder) {
             val resultCode = apiAvailability.isGooglePlayServicesAvailable(context)
 
             if (resultCode != ConnectionResult.SUCCESS) {
-                emitter.onError(RuntimeException("Google Play Services error: $resultCode"))
+                emitter.onError(GooglePlayServicesException(resultCode))
             } else {
                 emitter.onSuccess(true)
             }
@@ -190,9 +225,18 @@ class NotifiableManagerRx private constructor(builder: Builder) {
             .observeOn(Schedulers.io())
     }
 
+    /**
+     * Check that a registered device is available before calling the supplied code block.
+     *
+     * @return the result of the code block or [RuntimeException] if there's no registered device
+     */
+    private fun callOnRegisteredDevice(code: (String) -> Completable): Completable {
+        return registeredDevice?.let { code(it.id.toString()) }
+            ?: Completable.error(RuntimeException("No registered device found"))
+    }
+
 
     companion object {
-        const val PLAY_SERVICES_RESOLUTION_REQUEST = 9000
         const val FCM_NOTIFICATION_PROVIDER = "gcm"
     }
 

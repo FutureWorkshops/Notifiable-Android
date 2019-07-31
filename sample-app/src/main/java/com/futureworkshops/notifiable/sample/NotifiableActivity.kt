@@ -181,8 +181,7 @@ class NotifiableActivity : AppCompatActivity(), View.OnClickListener {
     @SuppressLint("CheckResult")
     private fun markNotificationClicked() {
         mNotifiableManagerRx.markNotificationOpened(
-            mLatestNotification!!.notificationId.toString(),
-            mDeviceId.toString()
+            mLatestNotification!!.notificationId.toString()
         )
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -199,7 +198,7 @@ class NotifiableActivity : AppCompatActivity(), View.OnClickListener {
 
     @SuppressLint("CheckResult")
     private fun updateDeviceToken() {
-        mNotifiableManagerRx.updateDeviceInformation(mDeviceId.toString(), token = mGcmToken)
+        mNotifiableManagerRx.updateDeviceInformation(token = mGcmToken)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
@@ -504,7 +503,7 @@ class NotifiableActivity : AppCompatActivity(), View.OnClickListener {
 
     @SuppressLint("CheckResult")
     private fun unregisterDevice() {
-        mNotifiableManagerRx.unregisterDevice(mDeviceId.toString())
+        mNotifiableManagerRx.unregisterDevice()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
