@@ -9,8 +9,8 @@ import android.os.Handler
 import android.view.View.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.futureworkshops.notifiable.sample.NotifiableActivity
 import com.futureworkshops.notifiable.sample.R
+import com.futureworkshops.notifiable.sample.presentation.demo.DemoActivity
 
 class SplashscreenActivity : AppCompatActivity() {
 
@@ -31,7 +31,7 @@ class SplashscreenActivity : AppCompatActivity() {
         super.onStart()
 
         Handler().postDelayed({
-            startActivity(NotifiableActivity.newIntent(this))
+            startActivity(DemoActivity.newIntent(this))
             finish()
         }, 400)
     }

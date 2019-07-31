@@ -2,7 +2,7 @@
  * Copyright ©  2018 - 2019 FutureWorkshops. All rights reserved.
  */
 
-package com.futureworkshops.notifiable.sample
+package com.futureworkshops.notifiable.sample.presentation.demo
 
 import android.annotation.SuppressLint
 import android.content.*
@@ -20,6 +20,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.futureworkshops.notifiable.rx.NotifiableManagerRx
 import com.futureworkshops.notifiable.rx.model.NotifiableMessage
+import com.futureworkshops.notifiable.sample.BuildConfig
+import com.futureworkshops.notifiable.sample.Constants
+import com.futureworkshops.notifiable.sample.NotifiableStates
+import com.futureworkshops.notifiable.sample.R
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.material.snackbar.Snackbar
@@ -30,7 +34,7 @@ import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import java.util.*
 
-class NotifiableActivity : AppCompatActivity(), View.OnClickListener {
+class DemoActivity : AppCompatActivity(), View.OnClickListener {
 
     private var mRegistrationBroadcastReceiver: BroadcastReceiver? = null
     private var isReceiverRegistered: Boolean = false
@@ -61,7 +65,7 @@ class NotifiableActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_notifiable)
+        setContentView(R.layout.activity_demo)
 
         mRegisterNotifiableButton = findViewById(R.id.btn_register_with_name)
         mRegisterNotifiableButton!!.setOnClickListener(this)
@@ -394,7 +398,8 @@ class NotifiableActivity : AppCompatActivity(), View.OnClickListener {
                 } else {
                     mDeviceName = deviceName
                     mDeviceUser = user
-                    mState = NotifiableStates.REGISTERED_ANONYMOUSLY
+                    mState =
+                        NotifiableStates.REGISTERED_ANONYMOUSLY
                     updateUi()
 
                     mDeviceId = device.id
@@ -583,7 +588,10 @@ class NotifiableActivity : AppCompatActivity(), View.OnClickListener {
         val resultCode = apiAvailability.isGooglePlayServicesAvailable(this)
         if (resultCode != ConnectionResult.SUCCESS) {
             if (apiAvailability.isUserResolvableError(resultCode)) {
-                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                apiAvailability.getErrorDialog(
+                    this, resultCode,
+                    PLAY_SERVICES_RESOLUTION_REQUEST
+                )
                     .show()
             } else {
                 Log.i(TAG, "This device is not supported.")
@@ -595,7 +603,7 @@ class NotifiableActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun showSnackbar(message: String) {
-        val view = this@NotifiableActivity.window.decorView
+        val view = this@DemoActivity.window.decorView
             .findViewById<View>(android.R.id.content)
         Snackbar.make(
             view,
@@ -626,10 +634,10 @@ class NotifiableActivity : AppCompatActivity(), View.OnClickListener {
     companion object {
 
         private val PLAY_SERVICES_RESOLUTION_REQUEST = 9000
-        private val TAG = NotifiableActivity::class.java!!.getSimpleName()
+        private val TAG = DemoActivity::class.java!!.getSimpleName()
 
         fun newIntent(context: Context): Intent {
-            return Intent(context, NotifiableActivity::class.java)
+            return Intent(context, DemoActivity::class.java)
         }
 
     }

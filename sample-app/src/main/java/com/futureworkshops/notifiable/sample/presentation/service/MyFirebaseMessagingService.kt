@@ -24,8 +24,8 @@ import com.futureworkshops.notifiable.rx.internal.createNotificationFromMap
 import com.futureworkshops.notifiable.rx.model.NotifiableMessage
 import com.futureworkshops.notifiable.sample.BuildConfig
 import com.futureworkshops.notifiable.sample.Constants
-import com.futureworkshops.notifiable.sample.NotifiableActivity
 import com.futureworkshops.notifiable.sample.R
+import com.futureworkshops.notifiable.sample.presentation.demo.DemoActivity
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -80,7 +80,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         markNotificationAsReceived(notification)
 
-        val intent = Intent(this, NotifiableActivity::class.java)
+        val intent = Intent(this, DemoActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
         intent.putExtra(Constants.NOTIFICATION, notification)
 

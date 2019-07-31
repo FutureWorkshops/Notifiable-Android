@@ -39,7 +39,7 @@
         </activity>
 
         <activity
-            android:name=".NotifiableActivity"
+            android:name=".presentation.demo.DemoActivity"
             android:launchMode="singleTask" />
 
 
