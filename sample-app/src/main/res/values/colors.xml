@@ -12,4 +12,6 @@
     <color name="color_background">#F1F1F1</color>
     <color name="color_surface">#FFFFFF</color>
 
+    <color name="transparent">#00111111</color>
+
 </resources>

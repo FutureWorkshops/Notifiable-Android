@@ -4,6 +4,17 @@
 
 <resources xmlns:tools="http://schemas.android.com/tools">
 
+    <style name="Notifiable.Splashscreen" parent="Base.Notifiable">
+
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:statusBarColor">@color/transparent</item>
+
+        <item name="android:navigationBarColor">@color/transparent</item>
+        <item name="android:windowLightNavigationBar" tools:ignore="NewApi">false</item>
+
+    </style>
+
+
     <!-- Base application theme. -->
     <style name="Notifiable.DayNight" parent="Base.Notifiable">
 

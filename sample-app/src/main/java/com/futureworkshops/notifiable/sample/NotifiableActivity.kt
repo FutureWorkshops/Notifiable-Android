@@ -18,8 +18,8 @@ import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.futureworkshops.notifiable.model.NotifiableMessage
 import com.futureworkshops.notifiable.rx.NotifiableManagerRx
+import com.futureworkshops.notifiable.rx.model.NotifiableMessage
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.material.snackbar.Snackbar
@@ -627,6 +627,11 @@ class NotifiableActivity : AppCompatActivity(), View.OnClickListener {
 
         private val PLAY_SERVICES_RESOLUTION_REQUEST = 9000
         private val TAG = NotifiableActivity::class.java!!.getSimpleName()
+
+        fun newIntent(context: Context): Intent {
+            return Intent(context, NotifiableActivity::class.java)
+        }
+
     }
 
 
