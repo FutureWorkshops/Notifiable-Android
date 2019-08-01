@@ -5,18 +5,22 @@
 package com.futureworkshops.notifiable.sample.presentation.demo
 
 import android.annotation.SuppressLint
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.text.TextUtils
 import android.util.Log
 import android.view.HapticFeedbackConstants
 import android.view.View
-import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatTextView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.updatePadding
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.futureworkshops.notifiable.rx.NotifiableManagerRx
 import com.futureworkshops.notifiable.rx.model.NotifiableMessage
@@ -24,6 +28,7 @@ import com.futureworkshops.notifiable.sample.BuildConfig
 import com.futureworkshops.notifiable.sample.Constants
 import com.futureworkshops.notifiable.sample.NotifiableStates
 import com.futureworkshops.notifiable.sample.R
+import com.futureworkshops.notifiable.sample.presentation.commons.doOnApplyWindowInsets
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.material.snackbar.Snackbar
@@ -39,18 +44,19 @@ class DemoActivity : AppCompatActivity(), View.OnClickListener {
     private var mRegistrationBroadcastReceiver: BroadcastReceiver? = null
     private var isReceiverRegistered: Boolean = false
 
-    private var mSharedPrefs: SharedPreferences? = null
+    private lateinit var versionTv: AppCompatTextView
+    private lateinit var deviceNameTil: TextInputLayout
 
 
-    private var mRegisterNotifiableButton: Button? = null
-    private var mRegisterAnonymousNotifiableButton: Button? = null
-    private var mUpdateDeviceInfoButton: Button? = null
-    private var mUpdateDeviceNameButton: Button? = null
-    private var mUpdateDeviceLocaleButton: Button? = null
-    private var mAssignToUserButton: Button? = null
-    private var mUnassignFromUserButton: Button? = null
-    private var mUnregisterDeviceButton: Button? = null
-    private var mOpenNotificationButton: Button? = null
+//    private var mRegisterNotifiableButton: Button? = null
+//    private var mRegisterAnonymousNotifiableButton: Button? = null
+//    private var mUpdateDeviceInfoButton: Button? = null
+//    private var mUpdateDeviceNameButton: Button? = null
+//    private var mUpdateDeviceLocaleButton: Button? = null
+//    private var mAssignToUserButton: Button? = null
+//    private var mUnassignFromUserButton: Button? = null
+//    private var mUnregisterDeviceButton: Button? = null
+//    private var mOpenNotificationButton: Button? = null
 
     private var mGcmToken: String? = null
     private var mDeviceId: Int = 0
@@ -67,37 +73,55 @@ class DemoActivity : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_demo)
 
-        mRegisterNotifiableButton = findViewById(R.id.btn_register_with_name)
-        mRegisterNotifiableButton!!.setOnClickListener(this)
 
-        mRegisterAnonymousNotifiableButton = findViewById(R.id.btn_register_anonymously)
-        mRegisterAnonymousNotifiableButton!!.setOnClickListener(this)
+        val rootLayout: ConstraintLayout = findViewById(R.id.rootLayout)
+        rootLayout.systemUiVisibility =
+            View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
 
-        mUpdateDeviceInfoButton = findViewById(R.id.btn_update_device_info)
-        mUpdateDeviceInfoButton!!.setOnClickListener(this)
 
-        mUpdateDeviceNameButton = findViewById(R.id.btn_update_device_name)
-        mUpdateDeviceNameButton!!.setOnClickListener(this)
+        versionTv = findViewById(R.id.version_tv)
+        versionTv.text =
+            getString(R.string.lbl_app_version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE)
 
-        mUpdateDeviceLocaleButton = findViewById(R.id.btn_update_device_locale)
-        mUpdateDeviceLocaleButton!!.setOnClickListener(this)
+        versionTv.doOnApplyWindowInsets { view, windowInsets, initialPadding ->
+            view.updatePadding(
+                bottom = initialPadding.bottom + windowInsets.systemWindowInsetBottom
+            )
 
-        mAssignToUserButton = findViewById(R.id.btn_assign_device_to_user)
-        mAssignToUserButton!!.setOnClickListener(this)
+            deviceNameTil = findViewById(R.id.device_name_til)
 
-        mUnassignFromUserButton = findViewById(R.id.btn_unassign_device_from_user)
-        mUnassignFromUserButton!!.setOnClickListener(this)
+        }
 
-        mUnregisterDeviceButton = findViewById(R.id.btn_unregister_device)
-        mUnregisterDeviceButton!!.setOnClickListener(this)
 
-        mOpenNotificationButton = findViewById(R.id.btn_mark_notification)
-        mOpenNotificationButton!!.setOnClickListener(this)
+//        mRegisterNotifiableButton = findViewById(R.id.btn_register_with_name)
+//        mRegisterNotifiableButton!!.setOnClickListener(this)
+//
+//        mRegisterAnonymousNotifiableButton = findViewById(R.id.btn_register_anonymously)
+//        mRegisterAnonymousNotifiableButton!!.setOnClickListener(this)
+//
+//        mUpdateDeviceInfoButton = findViewById(R.id.btn_update_device_info)
+//        mUpdateDeviceInfoButton!!.setOnClickListener(this)
+//
+//        mUpdateDeviceNameButton = findViewById(R.id.btn_update_device_name)
+//        mUpdateDeviceNameButton!!.setOnClickListener(this)
+//
+//        mUpdateDeviceLocaleButton = findViewById(R.id.btn_update_device_locale)
+//        mUpdateDeviceLocaleButton!!.setOnClickListener(this)
+//
+//        mAssignToUserButton = findViewById(R.id.btn_assign_device_to_user)
+//        mAssignToUserButton!!.setOnClickListener(this)
+//
+//        mUnassignFromUserButton = findViewById(R.id.btn_unassign_device_from_user)
+//        mUnassignFromUserButton!!.setOnClickListener(this)
+//
+//        mUnregisterDeviceButton = findViewById(R.id.btn_unregister_device)
+//        mUnregisterDeviceButton!!.setOnClickListener(this)
+//
+//        mOpenNotificationButton = findViewById(R.id.btn_mark_notification)
+//        mOpenNotificationButton!!.setOnClickListener(this)
 
         mCurrentLocale = Locale.UK
-        mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this)
-        mDeviceId = mSharedPrefs!!.getInt(Constants.NOTIFIABLE_DEVICE_ID, -1)
-
+//        mDeviceId = mSharedPrefs!!.getInt(Constants.NOTIFIABLE_DEVICE_ID, -1)
 
 
         mNotifiableManagerRx = NotifiableManagerRx.Builder(this)
@@ -140,7 +164,7 @@ class DemoActivity : AppCompatActivity(), View.OnClickListener {
         if (mLatestNotification != null) {
             // check that notification has id !
             if (mLatestNotification!!.notificationId != 0) {
-                mOpenNotificationButton!!.visibility = View.VISIBLE
+//                mOpenNotificationButton!!.visibility = View.VISIBLE
             } else {
                 showSnackbar("Received notification without id !")
             }
@@ -169,15 +193,15 @@ class DemoActivity : AppCompatActivity(), View.OnClickListener {
         v.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
 
         when (v.id) {
-            R.id.btn_register_with_name -> showRegisterDeviceDialog(false)
-            R.id.btn_register_anonymously -> showRegisterDeviceDialog(true)
-            R.id.btn_update_device_info -> showUpdateDeviceDialog()
-            R.id.btn_update_device_name -> showUpdateDeviceNameDialog()
-            R.id.btn_update_device_locale -> showUpdateDeviceLocaleDialog()
-            R.id.btn_assign_device_to_user -> showAssignDeviceDialog()
-            R.id.btn_unassign_device_from_user -> showUnassignDeviceConfirmationDialog()
-            R.id.btn_unregister_device -> showUnregisterDeviceDialog()
-            R.id.btn_mark_notification -> markNotificationClicked()
+//            R.id.btn_register_with_name -> showRegisterDeviceDialog(false)
+//            R.id.btn_register_anonymously -> showRegisterDeviceDialog(true)
+//            R.id.btn_update_device_info -> showUpdateDeviceDialog()
+//            R.id.btn_update_device_name -> showUpdateDeviceNameDialog()
+//            R.id.btn_update_device_locale -> showUpdateDeviceLocaleDialog()
+//            R.id.btn_assign_device_to_user -> showAssignDeviceDialog()
+//            R.id.btn_unassign_device_from_user -> showUnassignDeviceConfirmationDialog()
+//            R.id.btn_unregister_device -> showUnregisterDeviceDialog()
+//            R.id.btn_mark_notification -> markNotificationClicked()
         }
     }
 
@@ -192,7 +216,7 @@ class DemoActivity : AppCompatActivity(), View.OnClickListener {
             .subscribe({
                 showSnackbar("Notification marked as open")
                 mLatestNotification = null
-                mOpenNotificationButton!!.visibility = View.GONE
+//                mOpenNotificationButton!!.visibility = View.GONE
             }, { t ->
                 Timber.e(t)
                 showSnackbar(t.toString())
@@ -393,7 +417,6 @@ class DemoActivity : AppCompatActivity(), View.OnClickListener {
             .subscribe { device, error ->
 
                 if (error != null) {
-                    mSharedPrefs!!.edit().putInt(Constants.NOTIFIABLE_DEVICE_ID, -1).apply()
                     showSnackbar(error.toString())
                 } else {
                     mDeviceName = deviceName
@@ -403,8 +426,6 @@ class DemoActivity : AppCompatActivity(), View.OnClickListener {
                     updateUi()
 
                     mDeviceId = device.id
-                    mSharedPrefs!!.edit().putInt(Constants.NOTIFIABLE_DEVICE_ID, mDeviceId)
-                        .apply()
                     showSnackbar("Device registered with id  ${device.id}")
                 }
 
@@ -512,7 +533,6 @@ class DemoActivity : AppCompatActivity(), View.OnClickListener {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                mSharedPrefs!!.edit().putInt(Constants.NOTIFIABLE_DEVICE_ID, -1).apply()
 
                 // hide buttons
                 mState = NotifiableStates.UNREGISTERED
@@ -538,44 +558,44 @@ class DemoActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun updateUi() {
-        when (mState) {
-            NotifiableStates.UNREGISTERED -> {
-                mRegisterNotifiableButton!!.isEnabled = true
-                mRegisterAnonymousNotifiableButton!!.isEnabled = true
-
-                mUpdateDeviceInfoButton!!.visibility = View.GONE
-                mUnregisterDeviceButton!!.visibility = View.GONE
-                mUpdateDeviceNameButton!!.visibility = View.GONE
-                mUpdateDeviceLocaleButton!!.visibility = View.GONE
-                mUnassignFromUserButton!!.visibility = View.GONE
-            }
-            NotifiableStates.REGISTERED_WITH_USER -> {
-                mRegisterNotifiableButton!!.isEnabled = false
-                mRegisterAnonymousNotifiableButton!!.isEnabled = false
-
-                mAssignToUserButton!!.visibility = View.GONE
-
-                mUpdateDeviceInfoButton!!.visibility = View.VISIBLE
-                mUnregisterDeviceButton!!.visibility = View.VISIBLE
-
-                mUpdateDeviceNameButton!!.visibility = View.VISIBLE
-                mUpdateDeviceLocaleButton!!.visibility = View.VISIBLE
-                mUnassignFromUserButton!!.visibility = View.VISIBLE
-            }
-            NotifiableStates.REGISTERED_ANONYMOUSLY -> {
-                mRegisterNotifiableButton!!.isEnabled = false
-                mRegisterAnonymousNotifiableButton!!.isEnabled = false
-
-                mUnassignFromUserButton!!.visibility = View.GONE
-
-                mUpdateDeviceInfoButton!!.visibility = View.VISIBLE
-                mUnregisterDeviceButton!!.visibility = View.VISIBLE
-
-                mUpdateDeviceNameButton!!.visibility = View.VISIBLE
-                mUpdateDeviceLocaleButton!!.visibility = View.VISIBLE
-                mAssignToUserButton!!.visibility = View.VISIBLE
-            }
-        }
+//        when (mState) {
+//            NotifiableStates.UNREGISTERED -> {
+//                mRegisterNotifiableButton!!.isEnabled = true
+//                mRegisterAnonymousNotifiableButton!!.isEnabled = true
+//
+//                mUpdateDeviceInfoButton!!.visibility = View.GONE
+//                mUnregisterDeviceButton!!.visibility = View.GONE
+//                mUpdateDeviceNameButton!!.visibility = View.GONE
+//                mUpdateDeviceLocaleButton!!.visibility = View.GONE
+//                mUnassignFromUserButton!!.visibility = View.GONE
+//            }
+//            NotifiableStates.REGISTERED_WITH_USER -> {
+//                mRegisterNotifiableButton!!.isEnabled = false
+//                mRegisterAnonymousNotifiableButton!!.isEnabled = false
+//
+//                mAssignToUserButton!!.visibility = View.GONE
+//
+//                mUpdateDeviceInfoButton!!.visibility = View.VISIBLE
+//                mUnregisterDeviceButton!!.visibility = View.VISIBLE
+//
+//                mUpdateDeviceNameButton!!.visibility = View.VISIBLE
+//                mUpdateDeviceLocaleButton!!.visibility = View.VISIBLE
+//                mUnassignFromUserButton!!.visibility = View.VISIBLE
+//            }
+//            NotifiableStates.REGISTERED_ANONYMOUSLY -> {
+//                mRegisterNotifiableButton!!.isEnabled = false
+//                mRegisterAnonymousNotifiableButton!!.isEnabled = false
+//
+//                mUnassignFromUserButton!!.visibility = View.GONE
+//
+//                mUpdateDeviceInfoButton!!.visibility = View.VISIBLE
+//                mUnregisterDeviceButton!!.visibility = View.VISIBLE
+//
+//                mUpdateDeviceNameButton!!.visibility = View.VISIBLE
+//                mUpdateDeviceLocaleButton!!.visibility = View.VISIBLE
+//                mAssignToUserButton!!.visibility = View.VISIBLE
+//            }
+//        }
     }
 
     /**
