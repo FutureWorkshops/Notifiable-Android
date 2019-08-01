@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright ©  2018 - 2019 FutureWorkshops. All rights reserved.
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/device_iv"
+        android:layout_width="92dp"
+        android:layout_height="104dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:src="@drawable/generic_device"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginBottom="@dimen/activity_vertical_margin" />
+
+    <TextView
+        android:id="@+id/status_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/default_padding"
+        android:text="@string/lbl_state_not_registered"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
+        android:textSize="28sp"
+        app:layout_constraintBottom_toBottomOf="@+id/device_iv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/device_iv"
+        app:layout_constraintTop_toTopOf="@+id/device_iv" />
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/device_name_til"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/default_padding"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="@dimen/default_padding"
+        android:hint="@string/hint_device_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/device_iv">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/device_name_et"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="text" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/user_name_til"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/default_padding"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_marginEnd="@dimen/default_padding"
+        android:hint="@string/hint_user_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/device_name_til">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/user_name_et"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="text" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/locale_til"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/default_padding"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_marginEnd="@dimen/default_padding"
+        android:hint="@string/hint_locale"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/user_name_til">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/locale_et"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="none|textNoSuggestions" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/unregister_btn"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/default_padding"
+        android:layout_marginBottom="@dimen/default_padding"
+        android:text="@string/action_unregister_device"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/locale_til"
+        app:layout_constraintVertical_bias="1.0"
+        android:visibility="invisible"
+        tools:visibility="visible" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/register_btn"
+        style="@style/Widget.MaterialComponents.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/default_padding"
+        android:layout_marginBottom="@dimen/default_padding"
+        android:text="@string/action_register"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/locale_til"
+        app:layout_constraintVertical_bias="1.0" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
