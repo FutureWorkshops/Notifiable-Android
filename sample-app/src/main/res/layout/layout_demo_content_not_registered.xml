@@ -7,8 +7,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/demo_content_motion_layout"
-    app:applyMotionScene="@xml/ms_demo_content">
+    android:id="@+id/demo_content_motion_layout">
 
     <ImageView
         android:id="@+id/device_iv"
