@@ -7,7 +7,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/demo_content_motion_layout">
+    android:id="@+id/demo_content_motion_layout"
+    app:applyMotionScene="@xml/ms_demo_content">
 
     <ImageView
         android:id="@+id/device_iv"
@@ -19,20 +20,18 @@
         android:src="@drawable/generic_device"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:contentDescription="@string/app_name"
-        android:paddingBottom="@dimen/activity_vertical_margin" />
+        android:contentDescription="@string/app_name" />
 
     <TextView
         android:id="@+id/status_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/default_padding"
-        android:text="@string/lbl_state_not_registered"
-        android:textColor="?colorOnSurface"
+        android:text="@string/lbl_state_registered"
+        android:textColor="?colorSecondary"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
         android:textSize="28sp"
-        android:visibility="gone"
-        tools:visibility="gone"
+        android:visibility="visible"
         android:textAllCaps="true"
         app:layout_constraintBottom_toBottomOf="@+id/device_iv"
         app:layout_constraintEnd_toEndOf="parent"
@@ -44,12 +43,12 @@
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:indeterminate="true"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/device_iv"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/device_iv"
         app:layout_constraintTop_toTopOf="@+id/device_iv"
-        tools:visibility="visible" />
+        tools:visibility="gone" />
 
 
     <com.google.android.material.textfield.TextInputLayout
@@ -124,7 +123,7 @@
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:layout_marginBottom="@dimen/default_padding"
         android:text="@string/action_unregister_device"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/locale_til"
@@ -141,7 +140,6 @@
         android:layout_marginBottom="@dimen/default_padding"
         android:text="@string/action_register"
         android:visibility="gone"
-        tools:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/locale_til"
@@ -156,8 +154,7 @@
         android:layout_marginEnd="@dimen/default_padding"
         android:layout_marginBottom="@dimen/default_padding"
         android:text="@string/action_update"
-        android:visibility="gone"
-        tools:visibility="visible"
+        android:visibility="visible"
         android:enabled="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -168,7 +165,7 @@
         android:id="@+id/device_properties_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
+        android:visibility="visible"
         tools:visibility="visible"
         app:constraint_referenced_ids="device_name_til,locale_til,user_name_til"
         app:layout_constraintEnd_toEndOf="parent"

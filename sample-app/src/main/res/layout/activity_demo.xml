@@ -46,12 +46,13 @@
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/state_card"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_margin="@dimen/activity_horizontal_margin"
         app:layout_constraintBottom_toTopOf="@id/version_tv"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/app_bar">
+        app:layout_constraintTop_toBottomOf="@+id/app_bar"
+        app:layout_constraintVertical_bias="0.0">
 
         <include
             layout="@layout/layout_demo_content"

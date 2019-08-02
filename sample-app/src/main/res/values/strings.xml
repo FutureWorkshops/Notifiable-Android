@@ -47,5 +47,7 @@
     <string name="hint_device_name">Device name</string>
     <string name="hint_user_name">User</string>
     <string name="hint_locale">Locale</string>
+    <string name="lbl_state_registered">Registered</string>
+    <string name="action_update">Update</string>
     <!--<string name="gcm_defaultSenderId">972794828944</string>-->
 </resources>
