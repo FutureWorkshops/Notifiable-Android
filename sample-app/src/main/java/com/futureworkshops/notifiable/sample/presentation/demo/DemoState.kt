@@ -12,6 +12,7 @@ data class DemoState(
     val isUpdating: Boolean = false,
     val deviceRegistered: Boolean = false,
     val deviceNotRegistered: Boolean = false,
+    val deviceInfoUpdated: Boolean = false,
     val hasError: Boolean = false,
     val error: Error = Error.None,
     val notifiableDevice: RegisteredDevice? = null

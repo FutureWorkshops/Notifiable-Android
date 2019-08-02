@@ -7,6 +7,7 @@ package com.futureworkshops.notifiable.sample.presentation.demo
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.os.Handler
 import android.text.TextUtils
@@ -27,7 +28,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.transition.TransitionManager
 import com.futureworkshops.notifiable.sample.BuildConfig
 import com.futureworkshops.notifiable.sample.R
-import com.futureworkshops.notifiable.sample.presentation.commons.doOnApplyWindowInsets
+import com.futureworkshops.notifiable.sample.presentation.commons.*
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
@@ -52,27 +53,10 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
     private lateinit var userNameEt: TextInputEditText
     private lateinit var localeEt: TextInputEditText
     private lateinit var registerBtn: MaterialButton
+    private lateinit var updateBtn: MaterialButton
     private lateinit var unregisterBtn: MaterialButton
 
 
-//    private var mRegisterNotifiableButton: Button? = null
-//    private var mRegisterAnonymousNotifiableButton: Button? = null
-//    private var mUpdateDeviceInfoButton: Button? = null
-//    private var mUpdateDeviceNameButton: Button? = null
-//    private var mUpdateDeviceLocaleButton: Button? = null
-//    private var mAssignToUserButton: Button? = null
-//    private var mUnassignFromUserButton: Button? = null
-//    private var mUnregisterDeviceButton: Button? = null
-//    private var mOpenNotificationButton: Button? = null
-
-//    private var mGcmToken: String? = null
-//    private var mDeviceId: Int = 0
-//    private var mDeviceUser: String? = null
-//    private var mDeviceName: String? = null
-//    private lateinit var mNotifiableManagerRx: NotifiableManagerRx
-//    private var mLatestNotification: NotifiableMessage? = null
-
-//    private var mState: NotifiableStates? = null
 //    private var mCurrentLocale: Locale? = null
 
 
@@ -99,12 +83,20 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
         }
 
         statusTv = findViewById(R.id.status_tv)
+
         deviceNameEt = findViewById(R.id.device_name_et)
+        deviceNameEt.onTextChanged { _, _, _, _ -> enableUpdateButton() }
+
         userNameEt = findViewById(R.id.user_name_et)
+        userNameEt.onTextChanged { _, _, _, _ -> enableUpdateButton() }
+
         localeEt = findViewById(R.id.locale_et)
 
         registerBtn = findViewById(R.id.register_btn)
         registerBtn.setOnClickListener(this)
+
+        updateBtn = findViewById(R.id.update_btn)
+        updateBtn.setOnClickListener(this)
 
         unregisterBtn = findViewById(R.id.unregister_btn)
         unregisterBtn.setOnClickListener(this)
@@ -117,32 +109,6 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
             updateUiState(viewState)
         })
 
-//        mRegisterNotifiableButton = findViewById(R.id.btn_register_with_name)
-//        mRegisterNotifiableButton!!.setOnClickListener(this)
-//
-//        mRegisterAnonymousNotifiableButton = findViewById(R.id.btn_register_anonymously)
-//        mRegisterAnonymousNotifiableButton!!.setOnClickListener(this)
-//
-//        mUpdateDeviceInfoButton = findViewById(R.id.btn_update_device_info)
-//        mUpdateDeviceInfoButton!!.setOnClickListener(this)
-//
-//        mUpdateDeviceNameButton = findViewById(R.id.btn_update_device_name)
-//        mUpdateDeviceNameButton!!.setOnClickListener(this)
-//
-//        mUpdateDeviceLocaleButton = findViewById(R.id.btn_update_device_locale)
-//        mUpdateDeviceLocaleButton!!.setOnClickListener(this)
-//
-//        mAssignToUserButton = findViewById(R.id.btn_assign_device_to_user)
-//        mAssignToUserButton!!.setOnClickListener(this)
-//
-//        mUnassignFromUserButton = findViewById(R.id.btn_unassign_device_from_user)
-//        mUnassignFromUserButton!!.setOnClickListener(this)
-//
-//        mUnregisterDeviceButton = findViewById(R.id.btn_unregister_device)
-//        mUnregisterDeviceButton!!.setOnClickListener(this)
-//
-//        mOpenNotificationButton = findViewById(R.id.btn_mark_notification)
-//        mOpenNotificationButton!!.setOnClickListener(this)
 
 //        mCurrentLocale = Locale.UK
 //        mDeviceId = mSharedPrefs!!.getInt(Constants.NOTIFIABLE_DEVICE_ID, -1)
@@ -169,43 +135,6 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
         }
     }
 
-
-    private fun updateUiState(viewState: DemoState) {
-
-        when {
-            viewState.isCheckingNotifiableState -> {
-                updateConstraintSet(R.layout.layout_demo_content, contentLayout)
-            }
-            viewState.deviceRegistered -> {
-//                contentLayout.transitionToState(R.id.motion_state_device_registered)
-                updateConstraintSet(R.layout.layout_demo_content_registered, contentLayout)
-                statusTv.text = getString(R.string.lbl_state_registered)
-                deviceNameEt.setText(viewState.notifiableDevice?.name)
-                userNameEt.setText(viewState.notifiableDevice?.user)
-                localeEt.setText(viewState.notifiableDevice?.locale.toString())
-            }
-            viewState.deviceNotRegistered -> {
-                updateConstraintSet(R.layout.layout_demo_content_not_registered, contentLayout)
-//                contentLayout.transitionToState(R.id.motion_state_device_not_registered)
-
-                statusTv.text = getString(R.string.lbl_state_not_registered)
-            }
-            viewState.isUpdating -> {
-
-            }
-            viewState.hasError -> {
-
-            }
-        }
-    }
-
-
-    fun updateConstraintSet(@LayoutRes id: Int, target: ConstraintLayout) {
-        val newConstraintSet = ConstraintSet()
-        newConstraintSet.clone(this, id)
-        newConstraintSet.applyTo(target)
-        TransitionManager.beginDelayedTransition(target)
-    }
 
 //    private fun getTokenAsync() {
 //        FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener { instanceIdResult ->
@@ -258,17 +187,64 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
 
         when (v.id) {
             R.id.register_btn -> showRegisterDeviceDialog()
-//            R.id.btn_register_anonymously -> showRegisterDeviceDialog(true)
-//            R.id.btn_update_device_info -> showUpdateDeviceDialog()
-//            R.id.btn_update_device_name -> showUpdateDeviceNameDialog()
-//            R.id.btn_update_device_locale -> showUpdateDeviceLocaleDialog()
-//            R.id.btn_assign_device_to_user -> showAssignDeviceDialog()
-//            R.id.btn_unassign_device_from_user -> showUnassignDeviceConfirmationDialog()
+            R.id.update_btn -> updateDeviceInfo()
             R.id.unregister_btn -> showUnregisterDeviceDialog()
-//            R.id.btn_mark_notification -> markNotificationClicked()
         }
     }
 
+
+    private fun updateUiState(viewState: DemoState) {
+
+        when {
+            viewState.isCheckingNotifiableState -> {
+                updateConstraintSet(R.layout.layout_demo_content, contentLayout)
+            }
+            viewState.deviceRegistered -> {
+                updateConstraintSet(R.layout.layout_demo_content_registered, contentLayout)
+                statusTv.text = getString(R.string.lbl_state_registered)
+                statusTv.setTextColor(this.getPrimaryColour())
+                deviceNameEt.setText(viewState.notifiableDevice?.name)
+                userNameEt.setText(viewState.notifiableDevice?.user)
+                localeEt.setText(viewState.notifiableDevice?.locale.toString())
+                disableUpdateButton()
+            }
+            viewState.deviceNotRegistered -> {
+                updateConstraintSet(R.layout.layout_demo_content_not_registered, contentLayout)
+
+                statusTv.text = getString(R.string.lbl_state_not_registered)
+                statusTv.setTextColor(this.getOnSurfaceColour())
+
+                deviceNameEt.clear()
+                userNameEt.clear()
+                localeEt.clear()
+            }
+            viewState.isUpdating -> {
+
+            }
+            viewState.deviceInfoUpdated -> {
+                disableUpdateButton()
+            }
+            viewState.hasError -> {
+
+            }
+        }
+    }
+
+
+    private fun updateConstraintSet(@LayoutRes id: Int, target: ConstraintLayout) {
+        val newConstraintSet = ConstraintSet()
+        newConstraintSet.clone(this, id)
+        newConstraintSet.applyTo(target)
+        TransitionManager.beginDelayedTransition(target)
+    }
+
+    private fun enableUpdateButton() {
+        updateBtn.isEnabled = true
+    }
+
+    private fun disableUpdateButton() {
+        updateBtn.isEnabled = false
+    }
 
 //    @SuppressLint("CheckResult")
 //    private fun markNotificationClicked() {
@@ -357,6 +333,15 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
             viewModel.registerNotifiableDevice(user, deviceName)
             dialog.dismiss()
         }
+
+    }
+
+    private fun updateDeviceInfo() {
+        viewModel.updateDeviceInfo(
+            deviceNameEt.text.toString(),
+            userNameEt.text.toString(),
+            localeEt.text.toString()
+        )
 
     }
 
@@ -532,16 +517,16 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
 //    }
 //
 
-//
-//    private fun registerReceiver() {
-//        if (!isReceiverRegistered) {
-//            LocalBroadcastManager.getInstance(this).registerReceiver(
-//                mRegistrationBroadcastReceiver!!,
-//                IntentFilter(Constants.FIREBASE_NEW_TOKEN)
-//            )
-//            isReceiverRegistered = true
-//        }
-//    }
+
+    private fun registerReceiver() {
+        if (!isReceiverRegistered) {
+            LocalBroadcastManager.getInstance(this).registerReceiver(
+                mRegistrationBroadcastReceiver!!,
+                IntentFilter(FIREBASE_NEW_TOKEN)
+            )
+            isReceiverRegistered = true
+        }
+    }
 
     private fun updateUi() {
 //        when (mState) {
@@ -617,7 +602,7 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
     companion object {
 
         private val PLAY_SERVICES_RESOLUTION_REQUEST = 9000
-        private val TAG = DemoActivity::class.java!!.getSimpleName()
+        private const val FIREBASE_NEW_TOKEN = "firebase_token"
 
         fun newIntent(context: Context): Intent {
             return Intent(context, DemoActivity::class.java)

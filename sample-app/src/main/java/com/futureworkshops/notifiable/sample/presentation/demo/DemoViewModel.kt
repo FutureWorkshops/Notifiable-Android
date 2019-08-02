@@ -93,4 +93,23 @@ class DemoViewModel @Inject constructor(private val notifiableManagerRx: Notifia
         disposables.clear()
         super.onCleared()
     }
+
+    @SuppressLint("CheckResult")
+    fun updateDeviceInfo(
+        deviceName: String? = null,
+        userName: String? = null,
+        locale: String? = null
+    ) {
+        notifiableManagerRx.updateDeviceInformation(deviceName = deviceName, userName = userName)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                _viewState.postValue(DemoState(deviceInfoUpdated = true))
+
+            },
+                { t ->
+                    Timber.e(t)
+                    _viewState.postValue(DemoState(hasError = true))
+                })
+    }
 }
