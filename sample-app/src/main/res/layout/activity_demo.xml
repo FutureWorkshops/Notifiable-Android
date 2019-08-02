@@ -47,7 +47,7 @@
         android:id="@+id/state_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/activity_horizontal_margin"
+        android:layout_margin="@dimen/default_padding"
         app:layout_constraintBottom_toTopOf="@id/version_tv"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
