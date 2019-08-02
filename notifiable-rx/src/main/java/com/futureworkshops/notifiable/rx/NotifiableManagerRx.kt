@@ -61,7 +61,11 @@ class NotifiableManagerRx private constructor(builder: Builder) {
         customProperties: HashMap<String, String>? = null
     ): Single<NotifiableDevice> {
 
-        val safeDeviceName = deviceName ?: Build.DEVICE
+        val safeDeviceName = if (deviceName.isNullOrEmpty()) {
+            Build.MODEL
+        } else {
+            deviceName
+        }
 
         val tempDevice = NotifiableDevice(
             -1,
