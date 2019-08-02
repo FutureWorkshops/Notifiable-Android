@@ -42,6 +42,16 @@
             android:name=".presentation.demo.DemoActivity"
             android:launchMode="singleTask" />
 
+        <activity
+            android:name=".presentation.notification.NotificationActivity"
+            android:launchMode="singleTask"
+            android:parentActivityName=".presentation.demo.DemoActivity">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.futureworkshops.notifiable.sample.presentation.demo.DemoActivity" />
+        </activity>
+
 
         <service android:name="com.futureworkshops.notifiable.sample.presentation.service.MyFirebaseMessagingService">
             <intent-filter>
