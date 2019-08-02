@@ -2,6 +2,7 @@
  * Copyright ©  2018 - 2019 FutureWorkshops. All rights reserved.
  */
 
+import android.app.Application
 import android.content.Context
 import com.futureworkshops.notifiable.rx.NotifiableManagerRx
 import com.futureworkshops.notifiable.sample.domain.dagger.ViewModelModule
@@ -19,6 +20,13 @@ import javax.inject.Singleton
  */
 @Module(includes = [ViewModelModule::class])
 class AppModule {
+
+    /**
+     * Provide a [MetricsAnalytics] object across the whole app.
+     */
+    @Provides
+    @Singleton
+    fun provideContext(app: Application) = app.applicationContext
 
     /**
      * Provide a [Configuration] object across the whole app.

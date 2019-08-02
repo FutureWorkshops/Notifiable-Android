@@ -4,6 +4,7 @@
 
 import android.app.Application
 import com.futureworkshops.notifiable.sample.presentation.SampleApp
+import com.futureworkshops.notifiable.sample.presentation.demo.dagger.DemoProfileModule
 import dagger.BindsInstance
 import dagger.Component
 import dagger.android.AndroidInjectionModule
@@ -18,9 +19,8 @@ import javax.inject.Singleton
 @Component(
     modules = [AppModule::class,
         AndroidInjectionModule::class,
-        AndroidSupportInjectionModule::class
-        /*SplashActivityModule::class,
-        MetricsProfileModule::class*/]
+        AndroidSupportInjectionModule::class,
+        DemoProfileModule::class]
 )
 interface AppComponent : AndroidInjector<DaggerApplication> {
 

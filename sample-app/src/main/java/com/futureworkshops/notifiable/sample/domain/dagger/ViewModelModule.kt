@@ -21,6 +21,7 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(DemoViewModel::class)
     abstract fun bindDemoViewModel(demoViewModel: DemoViewModel): ViewModel
+
     @Binds
     abstract fun bindViewModelFactory(factory: NotifiableViewModelFactory): ViewModelProvider.Factory
 }

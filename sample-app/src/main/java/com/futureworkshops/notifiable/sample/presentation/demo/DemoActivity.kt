@@ -4,48 +4,55 @@
 
 package com.futureworkshops.notifiable.sample.presentation.demo
 
-import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.os.Bundle
+import android.os.Handler
 import android.text.TextUtils
-import android.util.Log
 import android.view.HapticFeedbackConstants
 import android.view.View
-import android.widget.CheckBox
 import android.widget.EditText
+import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.updatePadding
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.futureworkshops.notifiable.rx.NotifiableManagerRx
-import com.futureworkshops.notifiable.rx.model.NotifiableMessage
+import androidx.transition.TransitionManager
 import com.futureworkshops.notifiable.sample.BuildConfig
-import com.futureworkshops.notifiable.sample.Constants
-import com.futureworkshops.notifiable.sample.NotifiableStates
 import com.futureworkshops.notifiable.sample.R
 import com.futureworkshops.notifiable.sample.presentation.commons.doOnApplyWindowInsets
-import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.GoogleApiAvailability
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import com.google.firebase.iid.FirebaseInstanceId
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
-import timber.log.Timber
-import java.util.*
+import com.stelianmorariu.antrics.domain.dagger.Injectable
+import javax.inject.Inject
 
-class DemoActivity : AppCompatActivity(), View.OnClickListener {
+class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    lateinit var viewModel: DemoViewModel
 
     private var mRegistrationBroadcastReceiver: BroadcastReceiver? = null
     private var isReceiverRegistered: Boolean = false
 
+    private lateinit var contentLayout: ConstraintLayout
+    private lateinit var statusTv: AppCompatTextView
     private lateinit var versionTv: AppCompatTextView
-    private lateinit var deviceNameTil: TextInputLayout
+    private lateinit var deviceNameEt: TextInputEditText
+    private lateinit var userNameEt: TextInputEditText
+    private lateinit var localeEt: TextInputEditText
+    private lateinit var registerBtn: MaterialButton
+    private lateinit var unregisterBtn: MaterialButton
 
 
 //    private var mRegisterNotifiableButton: Button? = null
@@ -58,25 +65,27 @@ class DemoActivity : AppCompatActivity(), View.OnClickListener {
 //    private var mUnregisterDeviceButton: Button? = null
 //    private var mOpenNotificationButton: Button? = null
 
-    private var mGcmToken: String? = null
-    private var mDeviceId: Int = 0
-    private var mDeviceUser: String? = null
-    private var mDeviceName: String? = null
-    private lateinit var mNotifiableManagerRx: NotifiableManagerRx
-    private var mLatestNotification: NotifiableMessage? = null
+//    private var mGcmToken: String? = null
+//    private var mDeviceId: Int = 0
+//    private var mDeviceUser: String? = null
+//    private var mDeviceName: String? = null
+//    private lateinit var mNotifiableManagerRx: NotifiableManagerRx
+//    private var mLatestNotification: NotifiableMessage? = null
 
-    private var mState: NotifiableStates? = null
-    private var mCurrentLocale: Locale? = null
+//    private var mState: NotifiableStates? = null
+//    private var mCurrentLocale: Locale? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_demo)
 
-
         val rootLayout: ConstraintLayout = findViewById(R.id.rootLayout)
         rootLayout.systemUiVisibility =
             View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+
+
+        contentLayout = findViewById(R.id.demo_content_motion_layout)
 
 
         versionTv = findViewById(R.id.version_tv)
@@ -87,11 +96,26 @@ class DemoActivity : AppCompatActivity(), View.OnClickListener {
             view.updatePadding(
                 bottom = initialPadding.bottom + windowInsets.systemWindowInsetBottom
             )
-
-            deviceNameTil = findViewById(R.id.device_name_til)
-
         }
 
+        statusTv = findViewById(R.id.status_tv)
+        deviceNameEt = findViewById(R.id.device_name_et)
+        userNameEt = findViewById(R.id.user_name_et)
+        localeEt = findViewById(R.id.locale_et)
+
+        registerBtn = findViewById(R.id.register_btn)
+        registerBtn.setOnClickListener(this)
+
+        unregisterBtn = findViewById(R.id.unregister_btn)
+        unregisterBtn.setOnClickListener(this)
+
+        viewModel = ViewModelProviders.of(this, viewModelFactory)
+            .get(DemoViewModel::class.java)
+
+
+        viewModel.viewState.observe(this, Observer { viewState ->
+            updateUiState(viewState)
+        })
 
 //        mRegisterNotifiableButton = findViewById(R.id.btn_register_with_name)
 //        mRegisterNotifiableButton!!.setOnClickListener(this)
@@ -120,61 +144,101 @@ class DemoActivity : AppCompatActivity(), View.OnClickListener {
 //        mOpenNotificationButton = findViewById(R.id.btn_mark_notification)
 //        mOpenNotificationButton!!.setOnClickListener(this)
 
-        mCurrentLocale = Locale.UK
+//        mCurrentLocale = Locale.UK
 //        mDeviceId = mSharedPrefs!!.getInt(Constants.NOTIFIABLE_DEVICE_ID, -1)
 
 
-        mNotifiableManagerRx = NotifiableManagerRx.Builder(this)
-            .endpoint(BuildConfig.NOTIFIABLE_SERVER)
-            .credentials(
-                BuildConfig.NOTIFIABLE_CLIENT_ID,
-                BuildConfig.NOTIFIABLE_CLIENT_SECRET
-            )
-            .debug(BuildConfig.DEBUG)
-            .build()
+//        mNotifiableManagerRx = NotifiableManagerRx.Builder(this)
+//            .endpoint(BuildConfig.NOTIFIABLE_SERVER)
+//            .credentials(
+//                BuildConfig.NOTIFIABLE_CLIENT_ID,
+//                BuildConfig.NOTIFIABLE_CLIENT_SECRET
+//            )
+//            .debug(BuildConfig.DEBUG)
+//            .build()
 
         mRegistrationBroadcastReceiver = object : BroadcastReceiver() {
 
             override fun onReceive(context: Context, intent: Intent) {
-                getTokenAsync()
+//                getTokenAsync()
                 // If device has already been registered, update the token
-                if (mDeviceName != null) {
-                    updateDeviceToken()
-                }
+//                if (mDeviceName != null) {
+//                    updateDeviceToken()
+//                }
             }
         }
     }
 
-    private fun getTokenAsync() {
-        FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener { instanceIdResult ->
-            mGcmToken = instanceIdResult.token
-        }
-    }
 
+    private fun updateUiState(viewState: DemoState) {
 
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
-        try {
-            mLatestNotification =
-                intent.getSerializableExtra(Constants.NOTIFICATION) as NotifiableMessage
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        when {
+            viewState.isCheckingNotifiableState -> {
+                updateConstraintSet(R.layout.layout_demo_content, contentLayout)
+            }
+            viewState.deviceRegistered -> {
+//                contentLayout.transitionToState(R.id.motion_state_device_registered)
+                updateConstraintSet(R.layout.layout_demo_content_registered, contentLayout)
+                statusTv.text = getString(R.string.lbl_state_registered)
+                deviceNameEt.setText(viewState.notifiableDevice?.name)
+                userNameEt.setText(viewState.notifiableDevice?.user)
+                localeEt.setText(viewState.notifiableDevice?.locale.toString())
+            }
+            viewState.deviceNotRegistered -> {
+                updateConstraintSet(R.layout.layout_demo_content_not_registered, contentLayout)
+//                contentLayout.transitionToState(R.id.motion_state_device_not_registered)
 
-        if (mLatestNotification != null) {
-            // check that notification has id !
-            if (mLatestNotification!!.notificationId != 0) {
-//                mOpenNotificationButton!!.visibility = View.VISIBLE
-            } else {
-                showSnackbar("Received notification without id !")
+                statusTv.text = getString(R.string.lbl_state_not_registered)
+            }
+            viewState.isUpdating -> {
+
+            }
+            viewState.hasError -> {
+
             }
         }
-
     }
+
+
+    fun updateConstraintSet(@LayoutRes id: Int, target: ConstraintLayout) {
+        val newConstraintSet = ConstraintSet()
+        newConstraintSet.clone(this, id)
+        newConstraintSet.applyTo(target)
+        TransitionManager.beginDelayedTransition(target)
+    }
+
+//    private fun getTokenAsync() {
+//        FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener { instanceIdResult ->
+//            mGcmToken = instanceIdResult.token
+//        }
+//    }
+
+
+//    override fun onNewIntent(intent: Intent) {
+//        super.onNewIntent(intent)
+//        try {
+//            mLatestNotification =
+//                intent.getSerializableExtra(Constants.NOTIFICATION) as NotifiableMessage
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//        }
+//
+//        if (mLatestNotification != null) {
+//            // check that notification has id !
+//            if (mLatestNotification!!.notificationId != 0) {
+////                mOpenNotificationButton!!.visibility = View.VISIBLE
+//            } else {
+//                showSnackbar("Received notification without id !")
+//            }
+//        }
+//
+//    }
 
     override fun onResume() {
         super.onResume()
-        registerReceiver()
+//        registerReceiver()
+
+        Handler().postDelayed({ viewModel.checkNotifiableStatus() }, 1000)
     }
 
     override fun onPause() {
@@ -193,82 +257,82 @@ class DemoActivity : AppCompatActivity(), View.OnClickListener {
         v.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
 
         when (v.id) {
-//            R.id.btn_register_with_name -> showRegisterDeviceDialog(false)
+            R.id.register_btn -> showRegisterDeviceDialog()
 //            R.id.btn_register_anonymously -> showRegisterDeviceDialog(true)
 //            R.id.btn_update_device_info -> showUpdateDeviceDialog()
 //            R.id.btn_update_device_name -> showUpdateDeviceNameDialog()
 //            R.id.btn_update_device_locale -> showUpdateDeviceLocaleDialog()
 //            R.id.btn_assign_device_to_user -> showAssignDeviceDialog()
 //            R.id.btn_unassign_device_from_user -> showUnassignDeviceConfirmationDialog()
-//            R.id.btn_unregister_device -> showUnregisterDeviceDialog()
+            R.id.unregister_btn -> showUnregisterDeviceDialog()
 //            R.id.btn_mark_notification -> markNotificationClicked()
         }
     }
 
 
-    @SuppressLint("CheckResult")
-    private fun markNotificationClicked() {
-        mNotifiableManagerRx.markNotificationOpened(
-            mLatestNotification!!.notificationId.toString()
-        )
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                showSnackbar("Notification marked as open")
-                mLatestNotification = null
-//                mOpenNotificationButton!!.visibility = View.GONE
-            }, { t ->
-                Timber.e(t)
-                showSnackbar(t.toString())
-            })
+//    @SuppressLint("CheckResult")
+//    private fun markNotificationClicked() {
+//        mNotifiableManagerRx.markNotificationOpened(
+//            mLatestNotification!!.notificationId.toString()
+//        )
+//            .subscribeOn(Schedulers.io())
+//            .observeOn(AndroidSchedulers.mainThread())
+//            .subscribe({
+//                showSnackbar("Notification marked as open")
+//                mLatestNotification = null
+////                mOpenNotificationButton!!.visibility = View.GONE
+//            }, { t ->
+//                Timber.e(t)
+//                showSnackbar(t.toString())
+//            })
+//
+//    }
 
-    }
+//    @SuppressLint("CheckResult")
+//    private fun updateDeviceToken() {
+//        mNotifiableManagerRx.updateDeviceInformation(token = mGcmToken)
+//            .subscribeOn(Schedulers.io())
+//            .observeOn(AndroidSchedulers.mainThread())
+//            .subscribe({
+//                showSnackbar("FCM token has been refreshed")
+//            },
+//                { t ->
+//                    Timber.e(t)
+//                    showSnackbar(t.toString())
+//                })
+//
+//    }
 
-    @SuppressLint("CheckResult")
-    private fun updateDeviceToken() {
-        mNotifiableManagerRx.updateDeviceInformation(token = mGcmToken)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                showSnackbar("FCM token has been refreshed")
-            },
-                { t ->
-                    Timber.e(t)
-                    showSnackbar(t.toString())
-                })
+//    private fun showUpdateDeviceLocaleDialog() {
+//        val availableLocales = Locale.getAvailableLocales()
+//        val localeNames = ArrayList<String>()
+//        val currentLocaleDisplayName = mCurrentLocale!!.displayName
+//        var selected = 0
+//
+//        for (i in availableLocales.indices) {
+//            val displayCountry = availableLocales[i].displayName
+//
+//            if (!TextUtils.isEmpty(displayCountry)) {
+//                localeNames.add(displayCountry)
+//
+//                if (displayCountry.equals(currentLocaleDisplayName, ignoreCase = true)) {
+//                    selected = i
+//                }
+//            }
+//        }
+//
+//        AlertDialog.Builder(this)
+//            .setTitle(getString(R.string.title_user_devices))
+//            .setSingleChoiceItems(localeNames.toTypedArray<String>(), selected) { dialog, which ->
+//                val newSelection = (dialog as AlertDialog).listView.checkedItemPosition
+//                updateDeviceLocale(availableLocales[newSelection])
+//                dialog.dismiss()
+//            }
+//            .setPositiveButton(getString(R.string.action_ok), null)
+//            .setNegativeButton(getString(R.string.action_cancel), null).show()
+//    }
 
-    }
-
-    private fun showUpdateDeviceLocaleDialog() {
-        val availableLocales = Locale.getAvailableLocales()
-        val localeNames = ArrayList<String>()
-        val currentLocaleDisplayName = mCurrentLocale!!.displayName
-        var selected = 0
-
-        for (i in availableLocales.indices) {
-            val displayCountry = availableLocales[i].displayName
-
-            if (!TextUtils.isEmpty(displayCountry)) {
-                localeNames.add(displayCountry)
-
-                if (displayCountry.equals(currentLocaleDisplayName, ignoreCase = true)) {
-                    selected = i
-                }
-            }
-        }
-
-        AlertDialog.Builder(this)
-            .setTitle(getString(R.string.title_user_devices))
-            .setSingleChoiceItems(localeNames.toTypedArray<String>(), selected) { dialog, which ->
-                val newSelection = (dialog as AlertDialog).listView.checkedItemPosition
-                updateDeviceLocale(availableLocales[newSelection])
-                dialog.dismiss()
-            }
-            .setPositiveButton(getString(R.string.action_ok), null)
-            .setNegativeButton(getString(R.string.action_cancel), null).show()
-    }
-
-    private fun showRegisterDeviceDialog(isAnonymous: Boolean) {
+    private fun showRegisterDeviceDialog() {
         val view = layoutInflater.inflate(R.layout.dlg_register, null)
 
         val userlayout = view.findViewById<TextInputLayout>(R.id.user_layout)
@@ -276,9 +340,6 @@ class DemoActivity : AppCompatActivity(), View.OnClickListener {
         val devicelayout = view.findViewById<TextInputLayout>(R.id.device_layout)
         val device = view.findViewById<EditText>(R.id.device_et)
 
-        if (isAnonymous) {
-            userlayout.visibility = View.GONE
-        }
 
         val dialog = AlertDialog.Builder(this)
             .setTitle(getString(R.string.title_register_device))
@@ -289,273 +350,198 @@ class DemoActivity : AppCompatActivity(), View.OnClickListener {
 
         //Overriding the handler immediately after showing the dialog in order to prevent it from dismissing on incomplete information
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener { v ->
-            var user: String? = null
-            var deviceName: String? = null
-            var validContent = true
-            if (isAnonymous) {
-                deviceName = device.text.toString()
-                validContent = checkDeviceName(deviceName, devicelayout)
-            } else {
-                user = username.text.toString()
-                deviceName = device.text.toString()
+            v.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+            val user: String? = username.text.toString()
+            val deviceName = device.text.toString()
 
-                validContent =
-                    checkUser(user, userlayout) && checkDeviceName(deviceName, devicelayout)
-            }
-
-            if (validContent) {
-
-                userlayout.error = null
-                devicelayout.error = null
-
-                registerNotifiableDevice(user, deviceName)
-                dialog.dismiss()
-            }
+            viewModel.registerNotifiableDevice(user, deviceName)
+            dialog.dismiss()
         }
 
     }
 
-    private fun showUpdateDeviceDialog() {
-        val view = layoutInflater.inflate(R.layout.dlg_device_info, null)
+//    private fun showUpdateDeviceDialog() {
+//        val view = layoutInflater.inflate(R.layout.dlg_device_info, null)
+//
+//        val os = view.findViewById<EditText>(R.id.os_et)
+//
+//        val isEmulator = view.findViewById<CheckBox>(R.id.emulator_cb)
+//
+//        AlertDialog.Builder(this)
+//            .setTitle(getString(R.string.title_update_device))
+//            .setView(view)
+//            .setCancelable(false)
+//            .setPositiveButton(getString(R.string.action_ok)) { dialog1, which ->
+//                val osVersion = os.text.toString()
+//                val emulator = isEmulator.isChecked.toString()
+//
+//                updateDeviceInfo(osVersion, emulator)
+//            }
+//            .setNegativeButton(getString(R.string.action_cancel), null).show()
+//
+//    }
 
-        val os = view.findViewById<EditText>(R.id.os_et)
+//    private fun showUpdateDeviceNameDialog() {
+//        val view = layoutInflater.inflate(R.layout.dlg_text_input, null)
+//
+//        val layout = view.findViewById<TextInputLayout>(R.id.input_layout)
+//        val inputEt = view.findViewById<EditText>(R.id.input_et)
+//        inputEt.hint = getString(R.string.lbl_device_name)
+//
+//        val dialog = AlertDialog.Builder(this)
+//            .setTitle(getString(R.string.title_update_device))
+//            .setView(view)
+//            .setCancelable(false)
+//            .setPositiveButton(getString(R.string.action_ok), null)
+//            .setNegativeButton(getString(R.string.action_cancel), null).show()
+//
+//        //Overriding the handler immediately after showing the dialog in order to prevent it from dismissing on incomplete information
+//        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener { v ->
+//            val name = inputEt.text.toString()
+//
+//            if (checkDeviceName(name, layout)) {
+//                layout.error = null
+//                updateDeviceName(name)
+//                dialog.dismiss()
+//            }
+//        }
+//    }
 
-        val isEmulator = view.findViewById<CheckBox>(R.id.emulator_cb)
-
-        AlertDialog.Builder(this)
-            .setTitle(getString(R.string.title_update_device))
-            .setView(view)
-            .setCancelable(false)
-            .setPositiveButton(getString(R.string.action_ok)) { dialog1, which ->
-                val osVersion = os.text.toString()
-                val emulator = isEmulator.isChecked.toString()
-
-                updateDeviceInfo(osVersion, emulator)
-            }
-            .setNegativeButton(getString(R.string.action_cancel), null).show()
-
-    }
-
-    private fun showUpdateDeviceNameDialog() {
-        val view = layoutInflater.inflate(R.layout.dlg_text_input, null)
-
-        val layout = view.findViewById<TextInputLayout>(R.id.input_layout)
-        val inputEt = view.findViewById<EditText>(R.id.input_et)
-        inputEt.hint = getString(R.string.lbl_device_name)
-
-        val dialog = AlertDialog.Builder(this)
-            .setTitle(getString(R.string.title_update_device))
-            .setView(view)
-            .setCancelable(false)
-            .setPositiveButton(getString(R.string.action_ok), null)
-            .setNegativeButton(getString(R.string.action_cancel), null).show()
-
-        //Overriding the handler immediately after showing the dialog in order to prevent it from dismissing on incomplete information
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener { v ->
-            val name = inputEt.text.toString()
-
-            if (checkDeviceName(name, layout)) {
-                layout.error = null
-                updateDeviceName(name)
-                dialog.dismiss()
-            }
-        }
-    }
-
-    private fun showUnassignDeviceConfirmationDialog() {
-        AlertDialog.Builder(this)
-            .setTitle(getString(R.string.title_unassign_device))
-            .setMessage(getString(R.string.msg_unassign_device_confirmation))
-            .setCancelable(false)
-            .setPositiveButton(getString(R.string.action_ok)) { dialog1, which -> unassignDevice() }
-            .setNegativeButton(getString(R.string.action_cancel), null).show()
-    }
-
-    private fun showAssignDeviceDialog() {
-        val view = layoutInflater.inflate(R.layout.dlg_text_input, null)
-
-        val layout = view.findViewById<TextInputLayout>(R.id.input_layout)
-        val inputEt = view.findViewById<EditText>(R.id.input_et)
-        inputEt.hint = getString(R.string.lbl_user_name)
-
-        val dialog = AlertDialog.Builder(this)
-            .setTitle(getString(R.string.title_update_device))
-            .setView(view)
-            .setCancelable(false)
-            .setPositiveButton(getString(R.string.action_ok), null)
-            .setNegativeButton(getString(R.string.action_cancel), null).show()
-
-        //Overriding the handler immediately after showing the dialog in order to prevent it from dismissing on incomplete information
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener { v ->
-            val name = inputEt.text.toString()
-
-            if (checkUser(name, layout)) {
-                layout.error = null
-                assignDeviceToUser(name)
-                dialog.dismiss()
-            }
-        }
-    }
-
+    //    private fun showUnassignDeviceConfirmationDialog() {
+//        AlertDialog.Builder(this)
+//            .setTitle(getString(R.string.title_unassign_device))
+//            .setMessage(getString(R.string.msg_unassign_device_confirmation))
+//            .setCancelable(false)
+//            .setPositiveButton(getString(R.string.action_ok)) { dialog1, which -> unassignDevice() }
+//            .setNegativeButton(getString(R.string.action_cancel), null).show()
+//    }
+//
+//    private fun showAssignDeviceDialog() {
+//        val view = layoutInflater.inflate(R.layout.dlg_text_input, null)
+//
+//        val layout = view.findViewById<TextInputLayout>(R.id.input_layout)
+//        val inputEt = view.findViewById<EditText>(R.id.input_et)
+//        inputEt.hint = getString(R.string.lbl_user_name)
+//
+//        val dialog = AlertDialog.Builder(this)
+//            .setTitle(getString(R.string.title_update_device))
+//            .setView(view)
+//            .setCancelable(false)
+//            .setPositiveButton(getString(R.string.action_ok), null)
+//            .setNegativeButton(getString(R.string.action_cancel), null).show()
+//
+//        //Overriding the handler immediately after showing the dialog in order to prevent it from dismissing on incomplete information
+//        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener { v ->
+//            val name = inputEt.text.toString()
+//
+//            if (checkUser(name, layout)) {
+//                layout.error = null
+//                assignDeviceToUser(name)
+//                dialog.dismiss()
+//            }
+//        }
+//    }
+//
     private fun showUnregisterDeviceDialog() {
 
         AlertDialog.Builder(this)
             .setTitle(getString(R.string.title_unregister_device))
             .setMessage(getString(R.string.msg_unregister_device_confirmation))
             .setCancelable(false)
-            .setPositiveButton(getString(R.string.action_ok)) { dialog, which -> unregisterDevice() }
+            .setPositiveButton(getString(R.string.action_ok)) { _, _ -> viewModel.unregisterDevice() }
             .setNegativeButton(getString(R.string.action_cancel), null).show()
 
     }
 
-    @SuppressLint("CheckResult")
-    private fun registerNotifiableDevice(user: String?, deviceName: String?) {
 
-        mNotifiableManagerRx.registerDevice(deviceName, user)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { device, error ->
-
-                if (error != null) {
-                    showSnackbar(error.toString())
-                } else {
-                    mDeviceName = deviceName
-                    mDeviceUser = user
-                    mState =
-                        NotifiableStates.REGISTERED_ANONYMOUSLY
-                    updateUi()
-
-                    mDeviceId = device.id
-                    showSnackbar("Device registered with id  ${device.id}")
-                }
-
-            }
-    }
-
-    @SuppressLint("CheckResult")
-    private fun updateDeviceInfo(osVersion: String, emulator: String) {
-        // create map with entered values
-        val customProperties = HashMap<String, String>()
-        customProperties[Constants.OS_PROPERTY] = osVersion
-        customProperties[Constants.IS_EMULATOR_PROPERTY] = emulator
-
-
-        mNotifiableManagerRx.updateDeviceInformation(
-            mDeviceId.toString(),
-            customProperties = customProperties
-        )
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-
-                showSnackbar("Updated device properties")
-            },
-                { t ->
-                    Timber.e(t)
-                    showSnackbar(t.toString())
-                })
-
-
-//        val notifiableCallback = object : NotifiableCallback<NotifiableDevice> {
+//    @SuppressLint("CheckResult")
+//    private fun updateDeviceInfo(osVersion: String, emulator: String) {
+//        // create map with entered values
+//        val customProperties = HashMap<String, String>()
+//        customProperties[Constants.OS_PROPERTY] = osVersion
+//        customProperties[Constants.IS_EMULATOR_PROPERTY] = emulator
 //
-//            override fun onSuccess(ret: NotifiableDevice) {
-//                showSnackbar("Updated device with id " + ret.id.toString())
-//            }
 //
-//            override fun onError(error: String) {
-//                showSnackbar(error)
-//            }
-//        }
-//
-//        mNotifiableManager!!.updateDeviceCustomProperties(
+//        mNotifiableManagerRx.updateDeviceInformation(
 //            mDeviceId.toString(),
-//            customProperties,
-//            notifiableCallback
+//            customProperties = customProperties
 //        )
-    }
+//            .subscribeOn(Schedulers.io())
+//            .observeOn(AndroidSchedulers.mainThread())
+//            .subscribe({
+//
+//                showSnackbar("Updated device properties")
+//            },
+//                { t ->
+//                    Timber.e(t)
+//                    showSnackbar(t.toString())
+//                })
+//    }
 
-    @SuppressLint("CheckResult")
-    private fun updateDeviceName(name: String) {
-        mNotifiableManagerRx.updateDeviceInformation(mDeviceId.toString(), deviceName = name)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                mDeviceName = name
-                showSnackbar("Updated device name to $name")
-            },
-                { t ->
-                    Timber.e(t)
-                    showSnackbar(t.toString())
-                })
+//    @SuppressLint("CheckResult")
+//    private fun updateDeviceName(name: String) {
+//        mNotifiableManagerRx.updateDeviceInformation(mDeviceId.toString(), deviceName = name)
+//            .subscribeOn(Schedulers.io())
+//            .observeOn(AndroidSchedulers.mainThread())
+//            .subscribe({
+//                mDeviceName = name
+//                showSnackbar("Updated device name to $name")
+//            },
+//                { t ->
+//                    Timber.e(t)
+//                    showSnackbar(t.toString())
+//                })
+//
+//    }
+//
+//    @SuppressLint("CheckResult")
+//    private fun updateDeviceLocale(locale: Locale) {
+//        mNotifiableManagerRx.updateDeviceInformation(mDeviceId.toString(), locale = locale)
+//            .subscribeOn(Schedulers.io())
+//            .observeOn(AndroidSchedulers.mainThread())
+//            .subscribe({
+//                mCurrentLocale = locale
+//
+//                showSnackbar("Updated device Locale to " + locale.displayName)
+//            },
+//                { t ->
+//                    Timber.e(t)
+//                    showSnackbar(t.toString())
+//                })
+//    }
 
-    }
+//    private fun unassignDevice() {
+//    }
+//
+//    @SuppressLint("CheckResult")
+//    private fun assignDeviceToUser(user: String) {
+//        mNotifiableManagerRx.updateDeviceInformation(mDeviceId.toString(), userName = user)
+//            .subscribeOn(Schedulers.io())
+//            .observeOn(AndroidSchedulers.mainThread())
+//            .subscribe({
+//                mDeviceUser = user
+//                mState = NotifiableStates.REGISTERED_WITH_USER
+//                updateUi()
+//
+//                showSnackbar("Device was assigned to " + mDeviceUser!!)
+//            },
+//                { t ->
+//                    Timber.e(t)
+//                    showSnackbar(t.toString())
+//                })
+//    }
+//
 
-    @SuppressLint("CheckResult")
-    private fun updateDeviceLocale(locale: Locale) {
-        mNotifiableManagerRx.updateDeviceInformation(mDeviceId.toString(), locale = locale)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                mCurrentLocale = locale
-
-                showSnackbar("Updated device Locale to " + locale.displayName)
-            },
-                { t ->
-                    Timber.e(t)
-                    showSnackbar(t.toString())
-                })
-    }
-
-    private fun unassignDevice() {
-    }
-
-    @SuppressLint("CheckResult")
-    private fun assignDeviceToUser(user: String) {
-        mNotifiableManagerRx.updateDeviceInformation(mDeviceId.toString(), userName = user)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                mDeviceUser = user
-                mState = NotifiableStates.REGISTERED_WITH_USER
-                updateUi()
-
-                showSnackbar("Device was assigned to " + mDeviceUser!!)
-            },
-                { t ->
-                    Timber.e(t)
-                    showSnackbar(t.toString())
-                })
-    }
-
-    @SuppressLint("CheckResult")
-    private fun unregisterDevice() {
-        mNotifiableManagerRx.unregisterDevice()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-
-                // hide buttons
-                mState = NotifiableStates.UNREGISTERED
-                updateUi()
-
-                showSnackbar("Device successfully removed ")
-            },
-                { t ->
-                    Timber.e(t)
-                    showSnackbar(t.toString())
-                })
-
-    }
-
-    private fun registerReceiver() {
-        if (!isReceiverRegistered) {
-            LocalBroadcastManager.getInstance(this).registerReceiver(
-                mRegistrationBroadcastReceiver!!,
-                IntentFilter(Constants.FIREBASE_NEW_TOKEN)
-            )
-            isReceiverRegistered = true
-        }
-    }
+//
+//    private fun registerReceiver() {
+//        if (!isReceiverRegistered) {
+//            LocalBroadcastManager.getInstance(this).registerReceiver(
+//                mRegistrationBroadcastReceiver!!,
+//                IntentFilter(Constants.FIREBASE_NEW_TOKEN)
+//            )
+//            isReceiverRegistered = true
+//        }
+//    }
 
     private fun updateUi() {
 //        when (mState) {
@@ -598,29 +584,6 @@ class DemoActivity : AppCompatActivity(), View.OnClickListener {
 //        }
     }
 
-    /**
-     * Check the device to make sure it has the Google Play Services APK. If
-     * it doesn't, display a dialog that allows users to download the APK from
-     * the Google Play Store or enable it in the device's system settings.
-     */
-    private fun checkPlayServices(): Boolean {
-        val apiAvailability = GoogleApiAvailability.getInstance()
-        val resultCode = apiAvailability.isGooglePlayServicesAvailable(this)
-        if (resultCode != ConnectionResult.SUCCESS) {
-            if (apiAvailability.isUserResolvableError(resultCode)) {
-                apiAvailability.getErrorDialog(
-                    this, resultCode,
-                    PLAY_SERVICES_RESOLUTION_REQUEST
-                )
-                    .show()
-            } else {
-                Log.i(TAG, "This device is not supported.")
-                finish()
-            }
-            return false
-        }
-        return true
-    }
 
     private fun showSnackbar(message: String) {
         val view = this@DemoActivity.window.decorView
