@@ -49,5 +49,11 @@
     <string name="hint_locale">Locale</string>
     <string name="lbl_state_registered">Registered</string>
     <string name="action_update">Update</string>
+    <string name="lbl_status">Status:</string>
+    <string name="msg_status_opened">OPENED</string>
+    <string name="lbl_notification_message">Notification message:</string>
+    <string name="title_err_notification">Notification error</string>
+    <string name="err_extracting_notification">Missing notification or could not parse notification content</string>
+    <string name="lbl_missing_value">-</string>
     <!--<string name="gcm_defaultSenderId">972794828944</string>-->
 </resources>
