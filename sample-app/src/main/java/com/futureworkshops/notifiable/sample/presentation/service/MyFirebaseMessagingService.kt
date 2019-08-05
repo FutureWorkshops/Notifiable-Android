@@ -30,14 +30,16 @@ import dagger.android.AndroidInjection
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
+import javax.inject.Inject
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
-    private lateinit var notifiableManagerRx: NotifiableManagerRx
+    @Inject
+    lateinit var notifiableManagerRx: NotifiableManagerRx
 
     override fun onCreate() {
-        super.onCreate()
         AndroidInjection.inject(this)
+        super.onCreate()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel()
@@ -73,7 +75,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         val pendingIntent = PendingIntent.getActivity(
             this, 0 /* Request code */, intent,
-            PendingIntent.FLAG_UPDATE_CURRENT
+            PendingIntent.FLAG_ONE_SHOT
         )
 
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
