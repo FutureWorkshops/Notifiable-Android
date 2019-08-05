@@ -16,6 +16,7 @@ import android.os.Build
 import android.os.Build.VERSION_CODES
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
+import androidx.core.app.TaskStackBuilder
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.futureworkshops.notifiable.rx.NotifiableManagerRx
 import com.futureworkshops.notifiable.rx.internal.createNotificationFromMap
@@ -70,13 +71,22 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         markNotificationAsReceived(notification)
 
         val intent = Intent(this, NotificationActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         intent.putExtra(NOTIFICATION, notification)
 
-        val pendingIntent = PendingIntent.getActivity(
-            this, 0 /* Request code */, intent,
-            PendingIntent.FLAG_ONE_SHOT
-        )
+
+        // Create the TaskStackBuilder
+        val resultPendingIntent: PendingIntent? = TaskStackBuilder.create(this).run {
+            // Add the intent, which inflates the back stack
+            addNextIntentWithParentStack(intent)
+            // Get the PendingIntent containing the entire back stack
+            getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
+        }
+
+//        val pendingIntent = PendingIntent.getActivity(
+//            this, 0 /* Request code */, intent,
+//            PendingIntent.FLAG_ONE_SHOT
+//        )
 
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val notificationBuilder = NotificationCompat.Builder(this, CHANNEL_ID)
@@ -85,7 +95,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             .setContentText(notification.message)
             .setAutoCancel(true)
             .setSound(defaultSoundUri)
-            .setContentIntent(pendingIntent)
+            .setContentIntent(resultPendingIntent)
 
         val notificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

@@ -6,7 +6,6 @@ package com.futureworkshops.notifiable.sample.presentation.notification
 
 
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.view.HapticFeedbackConstants
 import android.view.View
 import android.widget.ImageView
@@ -39,8 +38,10 @@ class NotificationActivity : AppCompatActivity(), Injectable {
 
     private var notifiableMessage: NotifiableMessage? = null
 
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        Timber.e(" notification activity launched")
 
         setContentView(R.layout.activity_notification)
 
@@ -74,11 +75,15 @@ class NotificationActivity : AppCompatActivity(), Injectable {
             updateUiState(viewState)
         })
 
+    }
+
+    override fun onStart() {
+        super.onStart()
+
         notifiableMessage?.let {
             viewModel.setNotification(it)
         }
     }
-
 
     private fun updateUiState(viewState: NotificationViewState) {
 
