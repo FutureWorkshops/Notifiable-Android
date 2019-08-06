@@ -14,13 +14,14 @@
     <string name="action_register">Register</string>
     <string name="action_get_user_devices">Get user devices</string>
     <string name="action_check_token">Check if token is registered</string>
-    <string name="err_gcm_token">Could not obtain GCM token</string>
+    <string name="err_gcm_token">Could not obtain FCM token</string>
     <string name="title_register_device">Register device</string>
     <string name="action_ok">OK</string>
     <string name="action_cancel">Cancel</string>
-    <string name="lbl_user_name">Username</string>
+
+    <string name="lbl_user_alias">User Alias*</string>
     <string name="lbl_device_name">Device name</string>
-    <string name="err_user_required">User name is required</string>
+    <string name="err_user_required">User alias is required</string>
     <string name="err_device_name_required">Device name is required</string>
 
     <string name="action_update_device">Update </string>
@@ -55,5 +56,7 @@
     <string name="title_err_notification">Notification error</string>
     <string name="err_extracting_notification">Missing notification or could not parse notification content</string>
     <string name="lbl_missing_value">-</string>
+    <string name="hint_device_name_default_helper">Defaults to Build.MODEL value</string>
+    <string name="hint_user_alias_helper">External identifierstelian</string>
     <!--<string name="gcm_defaultSenderId">972794828944</string>-->
 </resources>

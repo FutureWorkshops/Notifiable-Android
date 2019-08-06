@@ -2,8 +2,8 @@
   ~ Copyright ©  2018 - 2019 FutureWorkshops. All rights reserved.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginLeft="@dimen/activity_horizontal_margin"
@@ -12,32 +12,44 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/user_layout"
-        android:layout_width="match_parent"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:descendantFocusability="afterDescendants">
+        android:layout_margin="@dimen/activity_vertical_margin"
+        android:descendantFocusability="afterDescendants"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:helperTextEnabled="true"
+        app:helperText="@string/hint_user_alias_helper">
 
-        <EditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/user_et"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/lbl_user_name"
+            android:hint="@string/lbl_user_alias"
             android:lines="1"
             android:maxLines="1"
             android:padding="@dimen/default_padding"
-            android:singleLine="true"
-            tools:text="value" />
+            android:singleLine="true" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/device_layout"
-        android:layout_width="match_parent"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:descendantFocusability="afterDescendants">
+        android:layout_margin="@dimen/activity_vertical_margin"
+        android:descendantFocusability="afterDescendants"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/user_layout"
+        app:helperTextEnabled="true"
+        app:helperText="@string/hint_device_name_default_helper">
 
-        <EditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/device_et"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -45,9 +57,8 @@
             android:lines="1"
             android:maxLines="1"
             android:padding="@dimen/default_padding"
-            android:singleLine="true"
-            tools:text="value" />
+            android:singleLine="true" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

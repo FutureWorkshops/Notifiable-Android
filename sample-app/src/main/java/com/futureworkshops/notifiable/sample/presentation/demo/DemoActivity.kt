@@ -6,12 +6,12 @@ package com.futureworkshops.notifiable.sample.presentation.demo
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.text.TextUtils
 import android.view.HapticFeedbackConstants
 import android.view.View
-import android.widget.EditText
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -186,39 +186,6 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
         updateBtn.isEnabled = false
     }
 
-//    @SuppressLint("CheckResult")
-//    private fun markNotificationClicked() {
-//        mNotifiableManagerRx.markNotificationOpened(
-//            mLatestNotification!!.notificationId.toString()
-//        )
-//            .subscribeOn(Schedulers.io())
-//            .observeOn(AndroidSchedulers.mainThread())
-//            .subscribe({
-//                showSnackbar("Notification marked as open")
-//                mLatestNotification = null
-////                mOpenNotificationButton!!.visibility = View.GONE
-//            }, { t ->
-//                Timber.e(t)
-//                showSnackbar(t.toString())
-//            })
-//
-//    }
-
-//    @SuppressLint("CheckResult")
-//    private fun updateDeviceToken() {
-//        mNotifiableManagerRx.updateDeviceInformation(token = mGcmToken)
-//            .subscribeOn(Schedulers.io())
-//            .observeOn(AndroidSchedulers.mainThread())
-//            .subscribe({
-//                showSnackbar("FCM token has been refreshed")
-//            },
-//                { t ->
-//                    Timber.e(t)
-//                    showSnackbar(t.toString())
-//                })
-//
-//    }
-
 //    private fun showUpdateDeviceLocaleDialog() {
 //        val availableLocales = Locale.getAvailableLocales()
 //        val localeNames = ArrayList<String>()
@@ -252,10 +219,10 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
         val view = layoutInflater.inflate(R.layout.dlg_register, null)
 
         val userlayout = view.findViewById<TextInputLayout>(R.id.user_layout)
-        val username = view.findViewById<EditText>(R.id.user_et)
+        val userAlias = view.findViewById<TextInputEditText>(R.id.user_et)
         val devicelayout = view.findViewById<TextInputLayout>(R.id.device_layout)
-        val device = view.findViewById<EditText>(R.id.device_et)
-
+        val device = view.findViewById<TextInputEditText>(R.id.device_et)
+        device.setText(Build.MODEL.toString())
 
         val dialog = AlertDialog.Builder(this)
             .setTitle(getString(R.string.title_register_device))
@@ -267,11 +234,14 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
         //Overriding the handler immediately after showing the dialog in order to prevent it from dismissing on incomplete information
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener { v ->
             v.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-            val user: String? = username.text.toString()
+            val user: String? = userAlias.text.toString()
             val deviceName = device.text.toString()
 
-            viewModel.registerNotifiableDevice(user, deviceName)
-            dialog.dismiss()
+            if (checkUser(user, userlayout)) {
+                viewModel.registerNotifiableDevice(user, deviceName)
+                dialog.dismiss()
+            }
+
         }
 
     }
@@ -508,13 +478,13 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
         ).show()
     }
 
-    private fun checkUser(inputValue: String, inputLayout: TextInputLayout): Boolean {
-        if (TextUtils.isEmpty(inputValue)) {
+    private fun checkUser(inputValue: String?, inputLayout: TextInputLayout): Boolean {
+        return if (inputValue.isNullOrBlank()) {
             inputLayout.error = getString(R.string.err_user_required)
-            return false
+            false
         } else {
             inputLayout.error = null
-            return true
+            true
         }
     }
 

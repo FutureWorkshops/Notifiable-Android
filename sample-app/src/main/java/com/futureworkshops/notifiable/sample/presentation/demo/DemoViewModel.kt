@@ -100,7 +100,7 @@ class DemoViewModel @Inject constructor(private val notifiableManagerRx: Notifia
         userName: String? = null,
         locale: String? = null
     ) {
-        notifiableManagerRx.updateDeviceInformation(deviceName = deviceName, userName = userName)
+        notifiableManagerRx.updateDeviceInformation(deviceName = deviceName, userAlias = userName)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
