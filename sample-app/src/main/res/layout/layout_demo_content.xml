@@ -5,9 +5,9 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/demo_content_motion_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/demo_content_motion_layout">
+    android:layout_height="match_parent">
 
     <ImageView
         android:id="@+id/device_iv"
@@ -16,11 +16,11 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:contentDescription="@string/app_name"
+        android:paddingBottom="@dimen/activity_vertical_margin"
         android:src="@drawable/generic_device"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:contentDescription="@string/app_name"
-        android:paddingBottom="@dimen/activity_vertical_margin" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/status_tv"
@@ -28,16 +28,16 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/default_padding"
         android:text="@string/lbl_state_not_registered"
-        android:textColor="?colorOnSurface"
+        android:textAllCaps="true"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
+        android:textColor="?colorOnSurface"
         android:textSize="28sp"
         android:visibility="gone"
-        tools:visibility="gone"
-        android:textAllCaps="true"
         app:layout_constraintBottom_toBottomOf="@+id/device_iv"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/device_iv"
-        app:layout_constraintTop_toTopOf="@+id/device_iv" />
+        app:layout_constraintTop_toTopOf="@+id/device_iv"
+        tools:visibility="gone" />
 
     <ProgressBar
         android:id="@+id/status_progress"
@@ -111,6 +111,8 @@
             android:id="@+id/locale_et"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:clickable="true"
+            android:focusable="false"
             android:inputType="none|textNoSuggestions" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -141,11 +143,11 @@
         android:layout_marginBottom="@dimen/default_padding"
         android:text="@string/action_register"
         android:visibility="gone"
-        tools:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/locale_til"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="1.0"
+        tools:visibility="visible" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/update_btn"
@@ -155,25 +157,37 @@
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:layout_marginEnd="@dimen/default_padding"
         android:layout_marginBottom="@dimen/default_padding"
+        android:enabled="false"
         android:text="@string/action_update"
         android:visibility="gone"
-        tools:visibility="visible"
-        android:enabled="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/locale_til"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="1.0"
+        tools:visibility="visible" />
+
+    <ProgressBar
+        android:id="@+id/device_update_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@id/update_btn"
+        app:layout_constraintEnd_toEndOf="@id/update_btn"
+        app:layout_constraintStart_toStartOf="@id/update_btn"
+        app:layout_constraintTop_toTopOf="@id/update_btn" />
+
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/device_properties_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        tools:visibility="visible"
         app:constraint_referenced_ids="device_name_til,locale_til,user_name_til"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/device_iv" />
+        app:layout_constraintTop_toBottomOf="@id/device_iv"
+        tools:visibility="visible" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

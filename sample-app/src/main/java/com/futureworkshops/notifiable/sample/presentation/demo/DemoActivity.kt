@@ -12,6 +12,7 @@ import android.os.Handler
 import android.text.TextUtils
 import android.view.HapticFeedbackConstants
 import android.view.View
+import android.widget.ProgressBar
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -31,7 +32,9 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.stelianmorariu.antrics.domain.dagger.Injectable
+import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
 
@@ -49,9 +52,7 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
     private lateinit var registerBtn: MaterialButton
     private lateinit var updateBtn: MaterialButton
     private lateinit var unregisterBtn: MaterialButton
-
-
-//    private var mCurrentLocale: Locale? = null
+    private lateinit var updateProgress: ProgressBar
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,6 +65,7 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
 
 
         contentLayout = findViewById(R.id.demo_content_motion_layout)
+
 
 
         versionTv = findViewById(R.id.version_tv)
@@ -85,12 +87,21 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
         userNameEt.onTextChanged { _, _, _, _ -> enableUpdateButton() }
 
         localeEt = findViewById(R.id.locale_et)
+        localeEt.setOnClickListener { v ->
+
+            viewModel.viewState.value?.notifiableDevice?.let {
+                v.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                showLocaleDialog(it.locale)
+            }
+        }
 
         registerBtn = findViewById(R.id.register_btn)
         registerBtn.setOnClickListener(this)
 
         updateBtn = findViewById(R.id.update_btn)
         updateBtn.setOnClickListener(this)
+
+        updateProgress = findViewById(R.id.device_update_progress)
 
         unregisterBtn = findViewById(R.id.unregister_btn)
         unregisterBtn.setOnClickListener(this)
@@ -102,10 +113,6 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
         viewModel.viewState.observe(this, Observer { viewState ->
             updateUiState(viewState)
         })
-
-
-//        mCurrentLocale = Locale.UK
-//        mDeviceId = mSharedPrefs!!.getInt(Constants.NOTIFIABLE_DEVICE_ID, -1)
 
     }
 
@@ -132,7 +139,6 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
         }
     }
 
-
     private fun updateUiState(viewState: DemoState) {
 
         when {
@@ -143,10 +149,7 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
                 updateConstraintSet(R.layout.layout_demo_content_registered, contentLayout)
                 statusTv.text = getString(R.string.lbl_state_registered)
                 statusTv.setTextColor(this.getPrimaryColour())
-                deviceNameEt.setText(viewState.notifiableDevice?.name)
-                userNameEt.setText(viewState.notifiableDevice?.user)
-                localeEt.setText(viewState.notifiableDevice?.locale.toString())
-                disableUpdateButton()
+                displayDeviceInfo(viewState)
             }
             viewState.deviceNotRegistered -> {
                 updateConstraintSet(R.layout.layout_demo_content_not_registered, contentLayout)
@@ -159,15 +162,25 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
                 localeEt.clear()
             }
             viewState.isUpdating -> {
-
+                updateProgress.visibility = View.VISIBLE
+                updateBtn.visibility = View.INVISIBLE
             }
             viewState.deviceInfoUpdated -> {
-                disableUpdateButton()
+                updateProgress.visibility = View.INVISIBLE
+                updateBtn.visibility = View.VISIBLE
+                displayDeviceInfo(viewState)
             }
             viewState.hasError -> {
 
             }
         }
+    }
+
+    private fun displayDeviceInfo(viewState: DemoState) {
+        deviceNameEt.setText(viewState.notifiableDevice?.name)
+        userNameEt.setText(viewState.notifiableDevice?.user)
+        localeEt.setText(viewState.notifiableDevice?.locale?.displayName.toString())
+        disableUpdateButton()
     }
 
 
@@ -186,34 +199,34 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
         updateBtn.isEnabled = false
     }
 
-//    private fun showUpdateDeviceLocaleDialog() {
-//        val availableLocales = Locale.getAvailableLocales()
-//        val localeNames = ArrayList<String>()
-//        val currentLocaleDisplayName = mCurrentLocale!!.displayName
-//        var selected = 0
-//
-//        for (i in availableLocales.indices) {
-//            val displayCountry = availableLocales[i].displayName
-//
-//            if (!TextUtils.isEmpty(displayCountry)) {
-//                localeNames.add(displayCountry)
-//
-//                if (displayCountry.equals(currentLocaleDisplayName, ignoreCase = true)) {
-//                    selected = i
-//                }
-//            }
-//        }
-//
-//        AlertDialog.Builder(this)
-//            .setTitle(getString(R.string.title_user_devices))
-//            .setSingleChoiceItems(localeNames.toTypedArray<String>(), selected) { dialog, which ->
-//                val newSelection = (dialog as AlertDialog).listView.checkedItemPosition
-//                updateDeviceLocale(availableLocales[newSelection])
-//                dialog.dismiss()
-//            }
-//            .setPositiveButton(getString(R.string.action_ok), null)
-//            .setNegativeButton(getString(R.string.action_cancel), null).show()
-//    }
+    private fun showLocaleDialog(currentLocale: Locale) {
+        val availableLocales = Locale.getAvailableLocales()
+        val localeNames = ArrayList<String>()
+        val currentLocaleDisplayName = currentLocale.displayName
+        var selected = 0
+
+        for (i in availableLocales.indices) {
+            val displayCountry = availableLocales[i].displayName
+
+            if (displayCountry.isNotBlank()) {
+                localeNames.add(displayCountry)
+
+                if (displayCountry.equals(currentLocaleDisplayName, ignoreCase = true)) {
+                    selected = i
+                }
+            }
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.title_choose_locale))
+            .setSingleChoiceItems(localeNames.toTypedArray(), selected) { dialog, which ->
+                val newSelection = (dialog as AlertDialog).listView.checkedItemPosition
+                viewModel.updateDeviceInfo(locale = availableLocales[newSelection])
+                dialog.dismiss()
+            }
+            .setPositiveButton(getString(R.string.action_ok), null)
+            .setNegativeButton(getString(R.string.action_cancel), null).show()
+    }
 
     private fun showRegisterDeviceDialog() {
         val view = layoutInflater.inflate(R.layout.dlg_register, null)
@@ -249,10 +262,8 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
     private fun updateDeviceInfo() {
         viewModel.updateDeviceInfo(
             deviceNameEt.text.toString(),
-            userNameEt.text.toString(),
-            localeEt.text.toString()
+            userNameEt.text.toString()
         )
-
     }
 
 //    private fun showUpdateDeviceDialog() {
@@ -426,47 +437,6 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
 //                })
 //    }
 //
-
-    private fun updateUi() {
-//        when (mState) {
-//            NotifiableStates.UNREGISTERED -> {
-//                mRegisterNotifiableButton!!.isEnabled = true
-//                mRegisterAnonymousNotifiableButton!!.isEnabled = true
-//
-//                mUpdateDeviceInfoButton!!.visibility = View.GONE
-//                mUnregisterDeviceButton!!.visibility = View.GONE
-//                mUpdateDeviceNameButton!!.visibility = View.GONE
-//                mUpdateDeviceLocaleButton!!.visibility = View.GONE
-//                mUnassignFromUserButton!!.visibility = View.GONE
-//            }
-//            NotifiableStates.REGISTERED_WITH_USER -> {
-//                mRegisterNotifiableButton!!.isEnabled = false
-//                mRegisterAnonymousNotifiableButton!!.isEnabled = false
-//
-//                mAssignToUserButton!!.visibility = View.GONE
-//
-//                mUpdateDeviceInfoButton!!.visibility = View.VISIBLE
-//                mUnregisterDeviceButton!!.visibility = View.VISIBLE
-//
-//                mUpdateDeviceNameButton!!.visibility = View.VISIBLE
-//                mUpdateDeviceLocaleButton!!.visibility = View.VISIBLE
-//                mUnassignFromUserButton!!.visibility = View.VISIBLE
-//            }
-//            NotifiableStates.REGISTERED_ANONYMOUSLY -> {
-//                mRegisterNotifiableButton!!.isEnabled = false
-//                mRegisterAnonymousNotifiableButton!!.isEnabled = false
-//
-//                mUnassignFromUserButton!!.visibility = View.GONE
-//
-//                mUpdateDeviceInfoButton!!.visibility = View.VISIBLE
-//                mUnregisterDeviceButton!!.visibility = View.VISIBLE
-//
-//                mUpdateDeviceNameButton!!.visibility = View.VISIBLE
-//                mUpdateDeviceLocaleButton!!.visibility = View.VISIBLE
-//                mAssignToUserButton!!.visibility = View.VISIBLE
-//            }
-//        }
-    }
 
 
     private fun showSnackbar(message: String) {

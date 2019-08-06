@@ -13,6 +13,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
+import java.util.*
 import javax.inject.Inject
 
 class DemoViewModel @Inject constructor(private val notifiableManagerRx: NotifiableManagerRx) :
@@ -27,10 +28,8 @@ class DemoViewModel @Inject constructor(private val notifiableManagerRx: Notifia
 
     @SuppressLint("CheckResult")
     fun checkNotifiableStatus() {
-
-        _viewState.postValue(DemoState(isCheckingNotifiableState = true))
-
         notifiableManagerRx.getRegisteredDevice()
+            .doOnSubscribe { _viewState.postValue(DemoState(isCheckingNotifiableState = true)) }
             .subscribe { device, _ ->
                 if (device != null) {
                     _viewState.postValue(
@@ -50,11 +49,10 @@ class DemoViewModel @Inject constructor(private val notifiableManagerRx: Notifia
 
     @SuppressLint("CheckResult")
     fun registerNotifiableDevice(user: String?, deviceName: String?) {
-        _viewState.postValue(DemoState(isCheckingNotifiableState = true))
-
         notifiableManagerRx.registerDevice(deviceName, user)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe { _viewState.postValue(DemoState(isCheckingNotifiableState = true)) }
             .subscribe { device, error ->
 
                 if (error != null) {
@@ -74,10 +72,10 @@ class DemoViewModel @Inject constructor(private val notifiableManagerRx: Notifia
 
     @SuppressLint("CheckResult")
     fun unregisterDevice() {
-        _viewState.postValue(DemoState(isCheckingNotifiableState = true))
         notifiableManagerRx.unregisterDevice()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe { _viewState.postValue(DemoState(isUpdating = true)) }
             .subscribe({
                 _viewState.postValue(DemoState(deviceNotRegistered = true))
 
@@ -97,14 +95,26 @@ class DemoViewModel @Inject constructor(private val notifiableManagerRx: Notifia
     @SuppressLint("CheckResult")
     fun updateDeviceInfo(
         deviceName: String? = null,
-        userName: String? = null,
-        locale: String? = null
+        userAlias: String? = null,
+        locale: Locale? = null
     ) {
-        notifiableManagerRx.updateDeviceInformation(deviceName = deviceName, userAlias = userName)
+        notifiableManagerRx.updateDeviceInformation(
+            userAlias = userAlias,
+            deviceName = deviceName,
+            locale = locale
+        )
+            .toSingle { }
+            .flatMap { notifiableManagerRx.getRegisteredDevice() }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe { _viewState.postValue(DemoState(isUpdating = true)) }
             .subscribe({
-                _viewState.postValue(DemoState(deviceInfoUpdated = true))
+                _viewState.postValue(
+                    DemoState(
+                        deviceInfoUpdated = true,
+                        notifiableDevice = DemoState.RegisteredDevice(it)
+                    )
+                )
 
             },
                 { t ->

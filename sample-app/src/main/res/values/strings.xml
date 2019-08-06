@@ -57,6 +57,8 @@
     <string name="err_extracting_notification">Missing notification or could not parse notification content</string>
     <string name="lbl_missing_value">-</string>
     <string name="hint_device_name_default_helper">Defaults to Build.MODEL value</string>
-    <string name="hint_user_alias_helper">External identifierstelian</string>
-    <!--<string name="gcm_defaultSenderId">972794828944</string>-->
+    <string name="hint_user_alias_helper">External identifier</string>
+
+    <string name="title_choose_locale">Choose Locale…</string>
+
 </resources>
