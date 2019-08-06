@@ -18,5 +18,5 @@ apiAvailability.getErrorDialog(activity,exceptionCode, PLAY_SERVICES_RESOLUTION_
 }
  * ```
  */
-class GooglePlayServicesException(exceptionCode: Int) :
+class GooglePlayServicesException(val exceptionCode: Int) :
     RuntimeException("We couldn't find Google Play Services on the device $exceptionCode")

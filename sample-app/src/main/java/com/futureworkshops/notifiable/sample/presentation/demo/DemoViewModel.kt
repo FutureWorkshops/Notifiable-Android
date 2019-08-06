@@ -9,6 +9,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.futureworkshops.notifiable.rx.NotifiableManagerRx
+import com.futureworkshops.notifiable.rx.internal.GooglePlayServicesException
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -55,9 +56,16 @@ class DemoViewModel @Inject constructor(private val notifiableManagerRx: Notifia
             .doOnSubscribe { _viewState.postValue(DemoState(isCheckingNotifiableState = true)) }
             .subscribe { device, error ->
 
+
                 if (error != null) {
-                    // FIXME check error type
-                    _viewState.postValue(DemoState(hasError = true))
+                    val viewStateError: DemoState.Error =
+                        if (error is GooglePlayServicesException) {
+                            DemoState.Error.GoogleServicesError(error.exceptionCode)
+                        } else {
+                            DemoState.Error.Generic(error.toString())
+                        }
+
+                    _viewState.postValue(DemoState(hasError = true, error = viewStateError))
                 } else {
                     _viewState.postValue(
                         DemoState(

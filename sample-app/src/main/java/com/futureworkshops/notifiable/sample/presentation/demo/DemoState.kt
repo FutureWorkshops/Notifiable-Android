@@ -21,8 +21,8 @@ data class DemoState(
 
 
     sealed class Error(message: String? = null) {
-        object GoogleServicesError : Error()
-        object UserNotFound : Error()
+        data class GoogleServicesError(val errorCode: Int) : Error()
+        data class Generic(val message: String?) : Error(message)
         object None : Error()
     }
 

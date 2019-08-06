@@ -26,6 +26,7 @@ import androidx.transition.TransitionManager
 import com.futureworkshops.notifiable.sample.BuildConfig
 import com.futureworkshops.notifiable.sample.R
 import com.futureworkshops.notifiable.sample.presentation.commons.*
+import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
@@ -179,8 +180,26 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
                 unregisterBtn.isEnabled = true
             }
             viewState.hasError -> {
-
+                handleError(viewState.error)
             }
+        }
+    }
+
+    private fun handleError(error: DemoState.Error) {
+        when (error) {
+            is DemoState.Error.GoogleServicesError -> {
+                val apiAvailability = GoogleApiAvailability.getInstance()
+                if (apiAvailability.isUserResolvableError(error.errorCode)) {
+                    apiAvailability.getErrorDialog(
+                        this,
+                        error.errorCode,
+                        PLAY_SERVICES_RESOLUTION_REQUEST
+                    )
+                        .show()
+                }
+            }
+
+            is DemoState.Error.Generic -> showSnackbar(error.toString())
         }
     }
 
@@ -305,6 +324,7 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
     }
 
     companion object {
+        private const val PLAY_SERVICES_RESOLUTION_REQUEST = 9000
 
         fun newIntent(context: Context): Intent {
             return Intent(context, DemoActivity::class.java)
