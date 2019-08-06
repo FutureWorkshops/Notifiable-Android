@@ -73,7 +73,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     /**
      * Create and show a simple notification containing the received GCM message
      *
-     * @param data GCM message received.
+     * @param data FCM message received.
      */
     private fun sendNotification(data: Map<String, String>) {
         val notification = createNotificationFromMap(data)
@@ -118,8 +118,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     @RequiresApi(api = VERSION_CODES.O)
     private fun createNotificationChannel() {
-        val name = "Sample"
-        val description = "Sample app general notifications"
+        val name = "Notifiable Sample"
+        val description = "Notifiable sample app general notifications"
         val importance = NotificationManager.IMPORTANCE_DEFAULT
         val channel = NotificationChannel(CHANNEL_ID, name, importance)
         channel.description = description
@@ -132,6 +132,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     companion object {
 
 
-        private val CHANNEL_ID = "General"
+        private const val CHANNEL_ID = "NotifiableSample"
     }
 }
