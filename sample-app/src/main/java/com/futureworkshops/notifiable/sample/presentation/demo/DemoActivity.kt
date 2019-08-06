@@ -9,7 +9,6 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
-import android.text.TextUtils
 import android.view.HapticFeedbackConstants
 import android.view.View
 import android.widget.ProgressBar
@@ -275,88 +274,6 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
         )
     }
 
-//    private fun showUpdateDeviceDialog() {
-//        val view = layoutInflater.inflate(R.layout.dlg_device_info, null)
-//
-//        val os = view.findViewById<EditText>(R.id.os_et)
-//
-//        val isEmulator = view.findViewById<CheckBox>(R.id.emulator_cb)
-//
-//        AlertDialog.Builder(this)
-//            .setTitle(getString(R.string.title_update_device))
-//            .setView(view)
-//            .setCancelable(false)
-//            .setPositiveButton(getString(R.string.action_ok)) { dialog1, which ->
-//                val osVersion = os.text.toString()
-//                val emulator = isEmulator.isChecked.toString()
-//
-//                updateDeviceInfo(osVersion, emulator)
-//            }
-//            .setNegativeButton(getString(R.string.action_cancel), null).show()
-//
-//    }
-
-//    private fun showUpdateDeviceNameDialog() {
-//        val view = layoutInflater.inflate(R.layout.dlg_text_input, null)
-//
-//        val layout = view.findViewById<TextInputLayout>(R.id.input_layout)
-//        val inputEt = view.findViewById<EditText>(R.id.input_et)
-//        inputEt.hint = getString(R.string.lbl_device_name)
-//
-//        val dialog = AlertDialog.Builder(this)
-//            .setTitle(getString(R.string.title_update_device))
-//            .setView(view)
-//            .setCancelable(false)
-//            .setPositiveButton(getString(R.string.action_ok), null)
-//            .setNegativeButton(getString(R.string.action_cancel), null).show()
-//
-//        //Overriding the handler immediately after showing the dialog in order to prevent it from dismissing on incomplete information
-//        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener { v ->
-//            val name = inputEt.text.toString()
-//
-//            if (checkDeviceName(name, layout)) {
-//                layout.error = null
-//                updateDeviceName(name)
-//                dialog.dismiss()
-//            }
-//        }
-//    }
-
-    //    private fun showUnassignDeviceConfirmationDialog() {
-//        AlertDialog.Builder(this)
-//            .setTitle(getString(R.string.title_unassign_device))
-//            .setMessage(getString(R.string.msg_unassign_device_confirmation))
-//            .setCancelable(false)
-//            .setPositiveButton(getString(R.string.action_ok)) { dialog1, which -> unassignDevice() }
-//            .setNegativeButton(getString(R.string.action_cancel), null).show()
-//    }
-//
-//    private fun showAssignDeviceDialog() {
-//        val view = layoutInflater.inflate(R.layout.dlg_text_input, null)
-//
-//        val layout = view.findViewById<TextInputLayout>(R.id.input_layout)
-//        val inputEt = view.findViewById<EditText>(R.id.input_et)
-//        inputEt.hint = getString(R.string.lbl_user_name)
-//
-//        val dialog = AlertDialog.Builder(this)
-//            .setTitle(getString(R.string.title_update_device))
-//            .setView(view)
-//            .setCancelable(false)
-//            .setPositiveButton(getString(R.string.action_ok), null)
-//            .setNegativeButton(getString(R.string.action_cancel), null).show()
-//
-//        //Overriding the handler immediately after showing the dialog in order to prevent it from dismissing on incomplete information
-//        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener { v ->
-//            val name = inputEt.text.toString()
-//
-//            if (checkUser(name, layout)) {
-//                layout.error = null
-//                assignDeviceToUser(name)
-//                dialog.dismiss()
-//            }
-//        }
-//    }
-//
     private fun showUnregisterDeviceDialog() {
 
         AlertDialog.Builder(this)
@@ -367,86 +284,6 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
             .setNegativeButton(getString(R.string.action_cancel), null).show()
 
     }
-
-
-//    @SuppressLint("CheckResult")
-//    private fun updateDeviceInfo(osVersion: String, emulator: String) {
-//        // create map with entered values
-//        val customProperties = HashMap<String, String>()
-//        customProperties[Constants.OS_PROPERTY] = osVersion
-//        customProperties[Constants.IS_EMULATOR_PROPERTY] = emulator
-//
-//
-//        mNotifiableManagerRx.updateDeviceInformation(
-//            mDeviceId.toString(),
-//            customProperties = customProperties
-//        )
-//            .subscribeOn(Schedulers.io())
-//            .observeOn(AndroidSchedulers.mainThread())
-//            .subscribe({
-//
-//                showSnackbar("Updated device properties")
-//            },
-//                { t ->
-//                    Timber.e(t)
-//                    showSnackbar(t.toString())
-//                })
-//    }
-
-//    @SuppressLint("CheckResult")
-//    private fun updateDeviceName(name: String) {
-//        mNotifiableManagerRx.updateDeviceInformation(mDeviceId.toString(), deviceName = name)
-//            .subscribeOn(Schedulers.io())
-//            .observeOn(AndroidSchedulers.mainThread())
-//            .subscribe({
-//                mDeviceName = name
-//                showSnackbar("Updated device name to $name")
-//            },
-//                { t ->
-//                    Timber.e(t)
-//                    showSnackbar(t.toString())
-//                })
-//
-//    }
-//
-//    @SuppressLint("CheckResult")
-//    private fun updateDeviceLocale(locale: Locale) {
-//        mNotifiableManagerRx.updateDeviceInformation(mDeviceId.toString(), locale = locale)
-//            .subscribeOn(Schedulers.io())
-//            .observeOn(AndroidSchedulers.mainThread())
-//            .subscribe({
-//                mCurrentLocale = locale
-//
-//                showSnackbar("Updated device Locale to " + locale.displayName)
-//            },
-//                { t ->
-//                    Timber.e(t)
-//                    showSnackbar(t.toString())
-//                })
-//    }
-
-//    private fun unassignDevice() {
-//    }
-//
-//    @SuppressLint("CheckResult")
-//    private fun assignDeviceToUser(user: String) {
-//        mNotifiableManagerRx.updateDeviceInformation(mDeviceId.toString(), userName = user)
-//            .subscribeOn(Schedulers.io())
-//            .observeOn(AndroidSchedulers.mainThread())
-//            .subscribe({
-//                mDeviceUser = user
-//                mState = NotifiableStates.REGISTERED_WITH_USER
-//                updateUi()
-//
-//                showSnackbar("Device was assigned to " + mDeviceUser!!)
-//            },
-//                { t ->
-//                    Timber.e(t)
-//                    showSnackbar(t.toString())
-//                })
-//    }
-//
-
 
     private fun showSnackbar(message: String) {
         val view = this@DemoActivity.window.decorView
@@ -467,20 +304,7 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
         }
     }
 
-    private fun checkDeviceName(inputValue: String, inputLayout: TextInputLayout): Boolean {
-        if (TextUtils.isEmpty(inputValue)) {
-            inputLayout.error = getString(R.string.err_device_name_required)
-            return false
-        } else {
-            inputLayout.error = null
-            return true
-        }
-    }
-
     companion object {
-
-        private val PLAY_SERVICES_RESOLUTION_REQUEST = 9000
-        private const val FIREBASE_NEW_TOKEN = "firebase_token"
 
         fun newIntent(context: Context): Intent {
             return Intent(context, DemoActivity::class.java)
