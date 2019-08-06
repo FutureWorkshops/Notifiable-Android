@@ -70,15 +70,13 @@ class NotificationActivity : AppCompatActivity(), Injectable {
         viewModel = ViewModelProviders.of(this, viewModelFactory)
             .get(NotificationViewModel::class.java)
 
-
         viewModel.viewState.observe(this, Observer { viewState ->
             updateUiState(viewState)
         })
-
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onResume() {
+        super.onResume()
 
         notifiableMessage?.let {
             viewModel.setNotification(it)
@@ -87,19 +85,16 @@ class NotificationActivity : AppCompatActivity(), Injectable {
 
     private fun updateUiState(viewState: NotificationViewState) {
 
-        when {
-            viewState.displayNotification -> {
-                notificationTitleTv.text =
-                    viewState.notification?.title ?: getString(R.string.lbl_missing_value)
-                notificationMessageTv.text =
-                    viewState.notification?.message ?: getString(R.string.lbl_missing_value)
+        updateNotificationContent(viewState)
 
-            }
+        when {
             viewState.isMarkingNotification -> {
+                Timber.e("marking notification")
                 notificationStatusTv.text = ""
                 statusProgres.visibility = View.VISIBLE
             }
             viewState.isNotificationMarked -> {
+                Timber.e("notification status updated")
                 statusProgres.visibility = View.INVISIBLE
                 notificationStatusTv.text = getString(R.string.msg_status_opened)
             }
@@ -107,6 +102,13 @@ class NotificationActivity : AppCompatActivity(), Injectable {
 
             }
         }
+    }
+
+    private fun updateNotificationContent(viewState: NotificationViewState) {
+        notificationTitleTv.text =
+            viewState.notification?.title ?: getString(R.string.lbl_missing_value)
+        notificationMessageTv.text =
+            viewState.notification?.message ?: getString(R.string.lbl_missing_value)
     }
 
 

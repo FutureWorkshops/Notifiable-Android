@@ -39,22 +39,26 @@ class NotificationViewModel @Inject constructor(private val notifiableManagerRx:
         // save notification locally
         _notificationLiveData.postValue(notifiableMessage)
 
-        // display notification
-        _viewState.postValue(
-            NotificationViewState(
-                displayNotification = true,
-                notification = notifiableMessage
-            )
-        )
-
         // mark notification as opened
         notifiableManagerRx.markNotificationOpened(notifiableMessage.notificationId.toString())
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe { _viewState.postValue(NotificationViewState(isMarkingNotification = true)) }
+            .doOnSubscribe {
+                _viewState.postValue(
+                    NotificationViewState(
+                        isMarkingNotification = true,
+                        notification = notifiableMessage
+                    )
+                )
+            }
             .subscribe(
                 {
-                    _viewState.postValue(NotificationViewState(isNotificationMarked = true))
+                    _viewState.postValue(
+                        NotificationViewState(
+                            isNotificationMarked = true,
+                            notification = notifiableMessage
+                        )
+                    )
 
                 },
                 { t ->
