@@ -10,6 +10,7 @@ import java.util.*
 data class DemoState(
     val isCheckingNotifiableState: Boolean = false,
     val isUpdating: Boolean = false,
+    val isUnregistering: Boolean = false,
     val deviceRegistered: Boolean = false,
     val deviceNotRegistered: Boolean = false,
     val deviceInfoUpdated: Boolean = false,

@@ -152,6 +152,7 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
                 statusTv.text = getString(R.string.lbl_state_registered)
                 statusTv.setTextColor(this.getPrimaryColour())
                 displayDeviceInfo(viewState)
+                unregisterBtn.isEnabled = true
             }
             viewState.deviceNotRegistered -> {
                 updateConstraintSet(R.layout.layout_demo_content_not_registered, contentLayout)
@@ -167,10 +168,16 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
                 updateProgress.visibility = View.VISIBLE
                 updateBtn.visibility = View.INVISIBLE
             }
+            viewState.isUnregistering -> {
+                updateProgress.visibility = View.INVISIBLE
+                updateBtn.isEnabled = false
+                unregisterBtn.isEnabled = false
+            }
             viewState.deviceInfoUpdated -> {
                 updateProgress.visibility = View.INVISIBLE
                 updateBtn.visibility = View.VISIBLE
                 displayDeviceInfo(viewState)
+                unregisterBtn.isEnabled = true
             }
             viewState.hasError -> {
 

@@ -75,7 +75,7 @@ class DemoViewModel @Inject constructor(private val notifiableManagerRx: Notifia
         notifiableManagerRx.unregisterDevice()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe { _viewState.postValue(DemoState(isUpdating = true)) }
+            .doOnSubscribe { _viewState.postValue(DemoState(isUnregistering = true)) }
             .subscribe({
                 _viewState.postValue(DemoState(deviceNotRegistered = true))
 
