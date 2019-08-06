@@ -32,6 +32,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.stelianmorariu.antrics.domain.dagger.Injectable
+import kotlinx.android.synthetic.main.activity_demo.*
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
@@ -131,6 +132,7 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
      */
     override fun onClick(v: View) {
         v.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+        rootLayout.requestFocus()
 
         when (v.id) {
             R.id.register_btn -> showRegisterDeviceDialog()
