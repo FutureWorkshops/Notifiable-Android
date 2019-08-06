@@ -4,10 +4,8 @@
 
 package com.futureworkshops.notifiable.sample.presentation.demo
 
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.os.Bundle
 import android.os.Handler
 import android.text.TextUtils
@@ -24,7 +22,6 @@ import androidx.core.view.updatePadding
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.transition.TransitionManager
 import com.futureworkshops.notifiable.sample.BuildConfig
 import com.futureworkshops.notifiable.sample.R
@@ -42,9 +39,6 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
     lateinit var viewModel: DemoViewModel
-
-    private var mRegistrationBroadcastReceiver: BroadcastReceiver? = null
-    private var isReceiverRegistered: Boolean = false
 
     private lateinit var contentLayout: ConstraintLayout
     private lateinit var statusTv: AppCompatTextView
@@ -113,67 +107,13 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
 //        mCurrentLocale = Locale.UK
 //        mDeviceId = mSharedPrefs!!.getInt(Constants.NOTIFIABLE_DEVICE_ID, -1)
 
-
-//        mNotifiableManagerRx = NotifiableManagerRx.Builder(this)
-//            .endpoint(BuildConfig.NOTIFIABLE_SERVER)
-//            .credentials(
-//                BuildConfig.NOTIFIABLE_CLIENT_ID,
-//                BuildConfig.NOTIFIABLE_CLIENT_SECRET
-//            )
-//            .debug(BuildConfig.DEBUG)
-//            .build()
-
-        mRegistrationBroadcastReceiver = object : BroadcastReceiver() {
-
-            override fun onReceive(context: Context, intent: Intent) {
-//                getTokenAsync()
-                // If device has already been registered, update the token
-//                if (mDeviceName != null) {
-//                    updateDeviceToken()
-//                }
-            }
-        }
     }
 
-
-//    private fun getTokenAsync() {
-//        FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener { instanceIdResult ->
-//            mGcmToken = instanceIdResult.token
-//        }
-//    }
-
-
-//    override fun onNewIntent(intent: Intent) {
-//        super.onNewIntent(intent)
-//        try {
-//            mLatestNotification =
-//                intent.getSerializableExtra(Constants.NOTIFICATION) as NotifiableMessage
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//        }
-//
-//        if (mLatestNotification != null) {
-//            // check that notification has id !
-//            if (mLatestNotification!!.notificationId != 0) {
-////                mOpenNotificationButton!!.visibility = View.VISIBLE
-//            } else {
-//                showSnackbar("Received notification without id !")
-//            }
-//        }
-//
-//    }
 
     override fun onResume() {
         super.onResume()
-//        registerReceiver()
 
         Handler().postDelayed({ viewModel.checkNotifiableStatus() }, 1000)
-    }
-
-    override fun onPause() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver!!)
-        isReceiverRegistered = false
-        super.onPause()
     }
 
 
@@ -516,17 +456,6 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
 //                })
 //    }
 //
-
-
-    private fun registerReceiver() {
-        if (!isReceiverRegistered) {
-            LocalBroadcastManager.getInstance(this).registerReceiver(
-                mRegistrationBroadcastReceiver!!,
-                IntentFilter(FIREBASE_NEW_TOKEN)
-            )
-            isReceiverRegistered = true
-        }
-    }
 
     private fun updateUi() {
 //        when (mState) {

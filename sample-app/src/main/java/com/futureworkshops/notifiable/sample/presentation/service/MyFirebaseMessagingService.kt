@@ -17,11 +17,9 @@ import android.os.Build.VERSION_CODES
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.TaskStackBuilder
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.futureworkshops.notifiable.rx.NotifiableManagerRx
 import com.futureworkshops.notifiable.rx.internal.createNotificationFromMap
 import com.futureworkshops.notifiable.rx.model.NotifiableMessage
-import com.futureworkshops.notifiable.sample.Constants
 import com.futureworkshops.notifiable.sample.R
 import com.futureworkshops.notifiable.sample.presentation.notification.NotificationActivity
 import com.futureworkshops.notifiable.sample.presentation.notification.NotificationActivity.Companion.NOTIFICATION
@@ -55,8 +53,20 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     override fun onNewToken(token: String?) {
         super.onNewToken(token)
 
-        val registrationComplete = Intent(Constants.FIREBASE_NEW_TOKEN)
-        LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete)
+        token?.let { newToken ->
+            // update token if device is registered
+            notifiableManagerRx.getRegisteredDevice()
+                .subscribeOn(Schedulers.io())
+                .subscribe { device, _ ->
+
+                    device?.let {
+                        if (it.token != newToken) {
+                            notifiableManagerRx.updateDeviceInformation(token = newToken)
+                                .subscribeOn(Schedulers.io())
+                        }
+                    }
+                }
+        }
     }
 
 
