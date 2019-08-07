@@ -6,7 +6,9 @@ package com.futureworkshops.notifiable.rx
 
 import android.content.Context
 import android.os.Build
+import com.futureworkshops.notifiable.rx.internal.DefaultNotifiableSchedulerProvider
 import com.futureworkshops.notifiable.rx.internal.GooglePlayServicesException
+import com.futureworkshops.notifiable.rx.internal.INotifiablScheduler
 import com.futureworkshops.notifiable.rx.internal.network.NotifiableApiImpl
 import com.futureworkshops.notifiable.rx.internal.storage.NotifiableSecureStorage
 import com.futureworkshops.notifiable.rx.internal.storage.SecureStoreProvider
@@ -16,7 +18,6 @@ import com.google.android.gms.common.GoogleApiAvailability
 import com.google.firebase.iid.FirebaseInstanceId
 import io.reactivex.Completable
 import io.reactivex.Single
-import io.reactivex.schedulers.Schedulers
 import java.util.*
 
 class NotifiableManagerRx private constructor(builder: Builder) {
@@ -25,10 +26,12 @@ class NotifiableManagerRx private constructor(builder: Builder) {
     private var notifiableApi: NotifiableApiImpl
     private var notifiableSecureStorage: NotifiableSecureStorage
     private var registeredDevice: NotifiableDevice?
+    private var schedulersProvider: INotifiablScheduler
 
     init {
         this.context = builder.context
         this.debug = builder.debug
+        this.schedulersProvider = builder.schedulersProvider
 
         this.notifiableApi = NotifiableApiImpl(
             builder.endpoint,
@@ -103,7 +106,7 @@ class NotifiableManagerRx private constructor(builder: Builder) {
                 notifiableSecureStorage.saveNotifiableDevice(registeredDevice!!)
                 registeredDevice!!
             }
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(schedulersProvider.io())
 
     }
 
@@ -212,8 +215,8 @@ class NotifiableManagerRx private constructor(builder: Builder) {
                 emitter.onSuccess(true)
             }
         }
-            .subscribeOn(Schedulers.io())
-            .observeOn(Schedulers.io())
+            .subscribeOn(schedulersProvider.io())
+            .observeOn(schedulersProvider.io())
 
     }
 
@@ -225,8 +228,8 @@ class NotifiableManagerRx private constructor(builder: Builder) {
                 }
                 .addOnFailureListener { t -> emitter.onError(t) }
         }
-            .subscribeOn(Schedulers.io())
-            .observeOn(Schedulers.io())
+            .subscribeOn(schedulersProvider.io())
+            .observeOn(schedulersProvider.io())
     }
 
     /**
@@ -241,6 +244,9 @@ class NotifiableManagerRx private constructor(builder: Builder) {
 
 
     companion object {
+        /**
+         * This needs to remain "gcm" because the backend will not recognize the new "fcm".
+         */
         const val FCM_NOTIFICATION_PROVIDER = "gcm"
     }
 
@@ -254,6 +260,9 @@ class NotifiableManagerRx private constructor(builder: Builder) {
         lateinit var notifiableSecret: String
             private set
 
+        var schedulersProvider: INotifiablScheduler = DefaultNotifiableSchedulerProvider()
+            private set
+
         var debug: Boolean = false
             private set
 
@@ -263,6 +272,17 @@ class NotifiableManagerRx private constructor(builder: Builder) {
             this.notifiableClient = client
             this.notifiableSecret = secret
         }
+
+        /**
+         * The scheduler thread provider that will be used for Notifiable calls.
+         *
+         *  You can provide your own scheduler provider by creating a [UserDefinedNotifiableScheduler]
+         *  instance and passing it here.
+         *
+         * If not specified, Notifiable will use the [DefaultNotifiableSchedulerProvider].
+         */
+        fun schedulersProvider(provider: INotifiablScheduler) =
+            apply { this.schedulersProvider = provider }
 
         /**
          * Enable or disable debug logs.
