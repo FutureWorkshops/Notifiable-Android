@@ -17,17 +17,20 @@
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
     <application
-        android:name=".SampleApp"
-        tools:replace="allowBackup"
+        android:name=".presentation.SampleApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        tools:ignore="GoogleAppIndexingWarning">
+        android:theme="@style/Notifiable.DayNight"
+        tools:ignore="GoogleAppIndexingWarning"
+        tools:replace="allowBackup">
 
-        <activity android:name=".NotifiableActivity"
-            android:launchMode="singleTask">
+        <activity
+            android:name=".presentation.splashscreen.SplashscreenActivity"
+            android:noHistory="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/Notifiable.Splashscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -35,11 +38,18 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".presentation.demo.DemoActivity" />
 
-        <service
-            android:name=".service.MyFirebaseMessagingService">
+        <activity
+            android:name=".presentation.notification.NotificationActivity"
+            android:parentActivityName=".presentation.demo.DemoActivity"
+            android:excludeFromRecents="true" />
+
+
+        <service android:name="com.futureworkshops.notifiable.sample.presentation.service.MyFirebaseMessagingService">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 

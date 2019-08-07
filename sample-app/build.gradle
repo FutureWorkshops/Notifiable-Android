@@ -5,6 +5,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 apply from: '../android_commons.gradle'
 apply from: '../android_dependencies.gradle'
 
@@ -64,7 +65,7 @@ android {
 
 dependencies {
 
-    implementation project(':library')
+//    implementation project(':library')
     implementation project(':notifiable-rx')
 
     implementation Libraries.kotlinStdLib
@@ -75,8 +76,26 @@ dependencies {
 
     implementation Libraries.timber
 
+    implementation Libraries.lifecycleRuntime
+    implementation Libraries.lifecycleExtensions
+    kapt Libraries.lifecycleCompiler
+
+
+    // UI
     implementation SupportLibraries.appCompatX
+    implementation SupportLibraries.annotationX
     implementation SupportLibraries.material
+    implementation SupportLibraries.constraintLayout
+
+    // dagger
+    implementation Libraries.dagger
+    kapt Libraries.daggerCompiler
+
+
+    implementation Libraries.daggerAndroid
+    implementation Libraries.daggerAndroidSupport
+    kapt Libraries.daggerAndroidProcessor
+
 
 }
 

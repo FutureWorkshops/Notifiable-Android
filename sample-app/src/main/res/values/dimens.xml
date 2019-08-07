@@ -1,11 +1,17 @@
 <!--
-  ~ Copyright (c) 2018 Future Workshops. All rights reserved.
+  ~ Copyright ©  2018 - 2019 FutureWorkshops. All rights reserved.
   -->
 
 <resources>
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
-    <dimen name="button_width">300dip</dimen>
-    <dimen name="default_padding">8dip</dimen>
+
+    <dimen name="button_width">300dp</dimen>
+
+    <dimen name="default_padding">8dp</dimen>
+
+    <dimen name="ic_splash_logo_size">104dp</dimen>
+    <dimen name="ic_logo_demo_size">64dp</dimen>
+    <dimen name="default_elevation">4dp</dimen>
 </resources>

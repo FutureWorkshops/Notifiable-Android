@@ -61,7 +61,11 @@ class NotifiableManagerRx private constructor(builder: Builder) {
         customProperties: HashMap<String, String>? = null
     ): Single<NotifiableDevice> {
 
-        val safeDeviceName = deviceName ?: Build.DEVICE
+        val safeDeviceName = if (deviceName.isNullOrEmpty()) {
+            Build.MODEL
+        } else {
+            deviceName
+        }
 
         val tempDevice = NotifiableDevice(
             -1,
@@ -117,20 +121,20 @@ class NotifiableManagerRx private constructor(builder: Builder) {
      * Update Notifiable device information. You need to specify at least one parameter .
      *
      * @param token update the FCM token
-     * @param userName update the name of the user associated with the device
+     * @param userAlias update the alias of the user associated with the device
      * @param deviceName update the name of the device(default value is [Build.DEVICE])
      * @param locale update the device locale
      * @param customProperties update one or more custom device properties
      */
     fun updateDeviceInformation(
         token: String? = null,
-        userName: String? = null,
+        userAlias: String? = null,
         deviceName: String? = null,
         locale: Locale? = null,
         customProperties: Map<String, String>? = null
     ): Completable {
         if (token.isNullOrBlank() &&
-            userName.isNullOrBlank() &&
+            userAlias.isNullOrBlank() &&
             deviceName.isNullOrBlank() &&
             locale == null
             && customProperties.isNullOrEmpty()
@@ -141,13 +145,13 @@ class NotifiableManagerRx private constructor(builder: Builder) {
                 notifiableApi.updateDeviceInformation(
                     deviceId,
                     token,
-                    userName,
+                    userAlias,
                     deviceName,
                     locale,
                     customProperties
                 ).doOnComplete {
                     token?.let { registeredDevice!!.token = token }
-                    userName?.let { registeredDevice!!.user = userName }
+                    userAlias?.let { registeredDevice!!.user = userAlias }
                     deviceName?.let { registeredDevice!!.name = deviceName }
                     locale?.let { registeredDevice!!.locale = locale }
                     customProperties?.let { registeredDevice!!.customProperties = customProperties }

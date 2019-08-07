@@ -31,7 +31,7 @@ class NotifiableSecureStorage(private val sharedPreferences: SharedPreferences) 
     }
 
     fun removeNotifiableDevice() {
-        sharedPreferences.edit().clear().apply()
+        sharedPreferences.edit().remove(NOTIFIABLE_DEVICE_KEY).apply()
     }
 
     fun getRegisteredDevice(): NotifiableDevice? {
