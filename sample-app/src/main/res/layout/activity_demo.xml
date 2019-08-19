@@ -8,14 +8,15 @@
     android:id="@+id/rootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    app:layoutDescription="@xml/demo_activity_motion_scene">
 
     <FrameLayout
         android:id="@+id/app_bar"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@drawable/bg_app_bar"
-        android:elevation="@dimen/default_elevation"
+        android:translationZ="@dimen/default_elevation"
         app:layout_constraintBottom_toBottomOf="@id/app_bar_guideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -48,10 +49,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/default_padding"
-        app:layout_constraintBottom_toTopOf="@id/version_tv"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@id/version_tv"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/app_bar"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0">
 
         <include

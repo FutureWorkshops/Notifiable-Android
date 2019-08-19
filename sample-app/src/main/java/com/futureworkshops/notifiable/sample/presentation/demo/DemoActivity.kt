@@ -8,7 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
+import android.util.DisplayMetrics
 import android.view.HapticFeedbackConstants
 import android.view.View
 import android.widget.ProgressBar
@@ -16,6 +16,7 @@ import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.updatePadding
@@ -28,11 +29,11 @@ import com.futureworkshops.notifiable.sample.R
 import com.futureworkshops.notifiable.sample.presentation.commons.*
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.stelianmorariu.antrics.domain.dagger.Injectable
-import kotlinx.android.synthetic.main.activity_demo.*
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
@@ -44,6 +45,8 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
 
     lateinit var viewModel: DemoViewModel
 
+    private lateinit var rootLayout: MotionLayout
+    private lateinit var contentCard: MaterialCardView
     private lateinit var contentLayout: ConstraintLayout
     private lateinit var statusTv: AppCompatTextView
     private lateinit var versionTv: AppCompatTextView
@@ -58,16 +61,21 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // override the default transitions
+        overridePendingTransition(R.anim.anim_no_translate, R.anim.anim_no_translate)
+
         setContentView(R.layout.activity_demo)
 
-        val rootLayout: ConstraintLayout = findViewById(R.id.rootLayout)
+        rootLayout = findViewById(R.id.rootLayout)
         rootLayout.systemUiVisibility =
             View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
 
+        setupMotionLayoutTriggers()
+
+        contentCard = findViewById(R.id.state_card)
 
         contentLayout = findViewById(R.id.demo_content_motion_layout)
-
-
 
         versionTv = findViewById(R.id.version_tv)
         versionTv.text =
@@ -115,15 +123,9 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
             updateUiState(viewState)
         })
 
+        rootLayout.transitionToEnd()
+
     }
-
-
-    override fun onResume() {
-        super.onResume()
-
-        Handler().postDelayed({ viewModel.checkNotifiableStatus() }, 1000)
-    }
-
 
     /**
      * Called when a view has been clicked.
@@ -139,6 +141,39 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
             R.id.update_btn -> updateDeviceInfo()
             R.id.unregister_btn -> showUnregisterDeviceDialog()
         }
+    }
+
+    /**
+     * Default transition applied to the MotionLayout is the first transition defined in the
+     * motion scene file([@id/splash_slide_transition])
+     */
+    private fun setupMotionLayoutTriggers() {
+        val displayMetrics = DisplayMetrics()
+        windowManager.defaultDisplay.getMetrics(displayMetrics)
+
+        rootLayout.setTransitionListener(object : MotionLayout.TransitionListener {
+            override fun onTransitionTrigger(p0: MotionLayout?, p1: Int, p2: Boolean, p3: Float) {
+
+            }
+
+            override fun onTransitionStarted(p0: MotionLayout?, p1: Int, p2: Int) {
+
+            }
+
+            override fun onTransitionChange(p0: MotionLayout?, p1: Int, p2: Int, p3: Float) {
+
+            }
+
+            /**
+             * @param [currentId] - the transition ID currently reached
+             */
+            override fun onTransitionCompleted(motionLayout: MotionLayout?, currentId: Int) {
+                viewModel.checkNotifiableStatus()
+
+            }
+
+        })
+
     }
 
     private fun updateUiState(viewState: DemoState) {
@@ -329,7 +364,6 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
         fun newIntent(context: Context): Intent {
             return Intent(context, DemoActivity::class.java)
         }
-
     }
 
 
