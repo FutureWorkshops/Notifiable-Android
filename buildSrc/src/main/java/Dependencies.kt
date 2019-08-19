@@ -13,7 +13,7 @@ object Versions {
     const val appcompat = "1.0.2"
     const val annotation = "1.1.0"
     const val material = "1.1.0-alpha07"
-    const val constraintLayout = "2.0.0-beta1"
+    const val constraintLayout = "2.0.0-beta2"
 
     const val jodaTime = "2.10.1"
 
