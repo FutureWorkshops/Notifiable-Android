@@ -9,47 +9,88 @@
         android:id="@+id/splash_slide_transition"
         app:constraintSetEnd="@id/cs_splash__slide_in_finish"
         app:constraintSetStart="@id/cs_splash_slide_in_start"
-        app:duration="1000"
+        app:duration="1200"
 
         >
 
         <KeyFrameSet>
 
             <KeyPosition
+                app:framePosition="30"
                 app:keyPositionType="deltaRelative"
-                app:transitionEasing="decelerate"
-                app:framePosition="50"
-                app:motionTarget="@id/state_card"
-                app:percentY="0.2"
-                app:percentX="0.2" />
+                app:motionTarget="@id/version_tv"
+                app:percentX="1"
+                app:percentY="1" />
 
             <KeyPosition
+                app:framePosition="30"
                 app:keyPositionType="deltaRelative"
-                app:framePosition="40"
                 app:motionTarget="@id/app_bar"
                 app:percentY="1"
                 app:sizePercent="1" />
 
             <KeyPosition
+                app:framePosition="39"
                 app:keyPositionType="deltaRelative"
-                app:framePosition="40"
                 app:motionTarget="@id/app_logo"
-                app:sizePercent="1"
+                app:percentX="0.8"
                 app:percentY="1"
-                app:percentX="1" />
+                app:sizePercent="1" />
 
             <KeyAttribute
-                app:framePosition="40"
-                app:motionTarget="@id/app_logo"
-
-                />
+                android:alpha="1.0"
+                app:framePosition="39"
+                app:motionTarget="@id/app_logo" />
 
             <KeyPosition
+                app:framePosition="41"
                 app:keyPositionType="deltaRelative"
-                app:framePosition="40"
-                app:motionTarget="@id/version_tv"
+                app:motionTarget="@id/app_logo"
+                app:percentX="1"
                 app:percentY="1"
-                app:percentX="1" />
+                app:sizePercent="1" />
+
+            <KeyPosition
+                app:framePosition="41"
+                app:keyPositionType="deltaRelative"
+                app:motionTarget="@id/app_logo_2"
+                app:percentX="1"
+                app:percentY="1"
+                app:sizePercent="1" />
+
+            <KeyAttribute
+                android:alpha="0.0"
+                app:framePosition="41"
+                app:motionTarget="@id/app_logo_2" />
+
+            <KeyAttribute
+                android:alpha="0.5"
+                app:framePosition="48"
+                app:motionTarget="@id/app_logo_2" />
+
+            <KeyAttribute
+                android:alpha="0.5"
+                app:framePosition="48"
+                app:motionTarget="@id/app_logo" />
+
+            <KeyAttribute
+                android:alpha="0.0"
+                app:framePosition="55"
+                app:motionTarget="@id/app_logo" />
+
+            <KeyAttribute
+                android:alpha="1.0"
+                app:framePosition="55"
+                app:motionTarget="@id/app_logo_2" />
+
+
+            <KeyPosition
+                app:framePosition="60"
+                app:keyPositionType="deltaRelative"
+                app:motionTarget="@id/state_card"
+                app:percentX="0.2"
+                app:percentY="0.2"
+                app:transitionEasing="decelerate" />
 
         </KeyFrameSet>
 
@@ -83,6 +124,21 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_logo_light" />
+
+
+        <Constraint
+            android:id="@+id/app_logo_2"
+            android:layout_width="192dp"
+            android:layout_height="@dimen/ic_logo_demo_size"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:src="@drawable/ic_notifiable_text_logo"
+            android:translationZ="@dimen/default_elevation"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@id/app_bar_guideline"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.7" />
 
         <Constraint
             android:id="@id/version_tv"
@@ -124,12 +180,25 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+
         <Constraint
             android:id="@id/app_logo"
             android:layout_width="@dimen/ic_logo_demo_size"
             android:layout_height="@dimen/ic_logo_demo_size"
-            android:layout_marginStart="@dimen/activity_horizontal_margin"
             android:src="@drawable/ic_logo_light"
+            android:translationZ="@dimen/default_elevation"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@+id/app_bar"
+            app:layout_constraintStart_toStartOf="@+id/app_logo_2"
+            app:layout_constraintTop_toTopOf="@+id/app_bar"
+            app:layout_constraintVertical_bias="0.7" />
+
+
+        <Constraint
+            android:id="@id/app_logo_2"
+            android:layout_width="192dp"
+            android:layout_height="@dimen/ic_logo_demo_size"
+            android:src="@drawable/ic_notifiable_text_logo"
             android:translationZ="@dimen/default_elevation"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="@+id/app_bar"
@@ -137,6 +206,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/app_bar"
             app:layout_constraintVertical_bias="0.7" />
+
 
         <Constraint
             android:id="@id/version_tv"

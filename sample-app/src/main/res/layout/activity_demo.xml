@@ -43,6 +43,21 @@
         app:layout_constraintTop_toTopOf="@+id/app_bar"
         app:layout_constraintVertical_bias="0.7" />
 
+    <ImageView
+        android:id="@+id/app_logo_2"
+        android:layout_width="192dp"
+        android:layout_height="@dimen/ic_logo_demo_size"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:src="@drawable/ic_notifiable_text_logo"
+        android:translationZ="4dp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/app_bar_guideline"
+        app:layout_constraintVertical_bias="0.7"
+        tools:visibility="visible" />
+
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/state_card"
