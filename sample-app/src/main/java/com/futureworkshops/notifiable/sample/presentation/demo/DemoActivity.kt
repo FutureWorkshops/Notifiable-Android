@@ -168,7 +168,9 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
              * @param [currentId] - the transition ID currently reached
              */
             override fun onTransitionCompleted(motionLayout: MotionLayout?, currentId: Int) {
-                viewModel.checkNotifiableStatus()
+                if (currentId == R.id.cs_splash__slide_in_finish) {
+                    viewModel.checkNotifiableStatus()
+                }
 
             }
 
