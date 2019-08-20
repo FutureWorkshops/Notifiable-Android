@@ -128,7 +128,7 @@
 
         <Constraint
             android:id="@+id/app_logo_2"
-            android:layout_width="192dp"
+            android:layout_width="@dimen/ic_expanded_logo_width"
             android:layout_height="@dimen/ic_logo_demo_size"
             android:layout_marginStart="@dimen/activity_horizontal_margin"
             android:src="@drawable/ic_notifiable_text_logo"
@@ -196,7 +196,7 @@
 
         <Constraint
             android:id="@id/app_logo_2"
-            android:layout_width="192dp"
+            android:layout_width="@dimen/ic_expanded_logo_width"
             android:layout_height="@dimen/ic_logo_demo_size"
             android:src="@drawable/ic_notifiable_text_logo"
             android:translationZ="@dimen/default_elevation"
