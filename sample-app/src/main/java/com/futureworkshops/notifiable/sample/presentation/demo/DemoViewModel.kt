@@ -90,7 +90,12 @@ class DemoViewModel @Inject constructor(private val notifiableManagerRx: Notifia
             },
                 { t ->
                     Timber.e(t)
-                    _viewState.postValue(DemoState(hasError = true))
+                    _viewState.postValue(
+                        DemoState(
+                            hasError = true,
+                            error = DemoState.Error.Generic(t.localizedMessage)
+                        )
+                    )
                 })
 
     }
