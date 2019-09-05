@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright ©  2018 - 2019 FutureWorkshops. All rights reserved.
+  -->
+
+<MotionScene xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <StateSet>
+
+        <State
+            android:id="@+id/state_loading"
+            app:constraints="@id/cs_content_loading" />
+
+        <State
+            android:id="@+id/state_device_registered"
+            app:constraints="@id/cs_device_registered" />
+
+        <State
+            android:id="@+id/state_device_not_registered"
+            app:constraints="@id/cs_device_not_registered" />
+
+        <State
+            android:id="@+id/state_updating_device_info"
+            app:constraints="@id/cs_updating_device_info" />
+
+    </StateSet>
+
+    <Transition
+        android:id="@+id/splash_slide_transition"
+        app:constraintSetEnd="@id/cs_splash__slide_in_finish"
+        app:constraintSetStart="@id/cs_splash_slide_in_start"
+        app:duration="1200"
+
+        >
+
+
+    </Transition>
+
+
+    <ConstraintSet android:id="@+id/cs_content_loading">
+
+        <Constraint
+            android:id="@id/device_iv"
+            android:layout_width="92dp"
+            android:layout_height="104dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:contentDescription="@string/app_name"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <Constraint
+            android:id="@+id/status_progress"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:indeterminate="true"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@+id/device_iv"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/device_iv"
+            app:layout_constraintTop_toTopOf="@+id/device_iv" />
+
+        <Constraint
+            android:id="@+id/status_tv"
+            android:visibility="invisible" />
+
+        <Constraint
+            android:id="@+id/device_name_til"
+            android:visibility="invisible" />
+
+        <Constraint
+            android:id="@+id/user_name_til"
+            android:visibility="invisible" />
+
+        <Constraint
+            android:id="@+id/locale_til"
+            android:visibility="invisible" />
+
+        <Constraint
+            android:id="@+id/register_btn"
+            android:visibility="invisible" />
+
+        <Constraint
+            android:id="@+id/unregister_btn"
+            android:visibility="invisible" />
+
+        <Constraint
+            android:id="@+id/update_btn"
+            android:visibility="invisible" />
+
+
+    </ConstraintSet>
+
+    <ConstraintSet android:id="@+id/cs_device_registered">
+        <Constraint
+            android:id="@+id/status_progress"
+            android:visibility="invisible" />
+
+        <Constraint
+            android:id="@+id/status_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/default_padding"
+            android:text="@string/lbl_state_registered"
+            android:textColor="?colorSecondary"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
+            android:textSize="28sp"
+            android:visibility="visible"
+            android:textAllCaps="true"
+            app:layout_constraintBottom_toBottomOf="@+id/device_iv"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/device_iv"
+            app:layout_constraintTop_toTopOf="@+id/device_iv" />
+
+        <Constraint
+            android:id="@+id/device_name_til"
+            android:visibility="visible"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/default_padding"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="@dimen/default_padding"
+            android:hint="@string/hint_device_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/device_iv" />
+
+        <Constraint
+            android:id="@+id/user_name_til"
+            android:visibility="visible"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/default_padding"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginEnd="@dimen/default_padding"
+            android:hint="@string/hint_user_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/device_name_til" />
+
+        <Constraint
+            android:id="@+id/locale_til"
+            android:visibility="visible"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/default_padding"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginEnd="@dimen/default_padding"
+            android:hint="@string/hint_locale"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/user_name_til" />
+
+        <Constraint
+            android:id="@+id/register_btn"
+            android:visibility="invisible" />
+
+        <Constraint
+            android:id="@+id/unregister_btn"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/default_padding"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginBottom="@dimen/default_padding"
+            android:text="@string/action_unregister_device"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/locale_til"
+            app:layout_constraintVertical_bias="1.0" />
+
+        <Constraint
+            android:id="@+id/update_btn"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginEnd="@dimen/default_padding"
+            android:layout_marginBottom="@dimen/default_padding"
+            android:text="@string/action_update"
+            android:visibility="visible"
+            android:enabled="false"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/locale_til"
+            app:layout_constraintVertical_bias="1.0" />
+
+
+    </ConstraintSet>
+
+    <ConstraintSet android:id="@+id/cs_device_not_registered">
+        <Constraint
+            android:id="@id/device_iv"
+            android:layout_width="92dp"
+            android:layout_height="104dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:contentDescription="@string/app_name"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <Constraint
+            android:id="@+id/status_progress"
+            android:visibility="invisible" />
+
+        <Constraint
+            android:id="@+id/status_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/default_padding"
+            android:text="@string/lbl_state_not_registered"
+            android:textColor="?colorOnSurface"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
+            android:textSize="28sp"
+            android:visibility="visible"
+            android:textAllCaps="true"
+            app:layout_constraintBottom_toBottomOf="@+id/device_iv"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/device_iv"
+            app:layout_constraintTop_toTopOf="@+id/device_iv" />
+
+        <Constraint
+            android:id="@+id/device_name_til"
+            android:visibility="invisible" />
+
+        <Constraint
+            android:id="@+id/user_name_til"
+            android:visibility="invisible" />
+
+        <Constraint
+            android:id="@+id/locale_til"
+            android:visibility="invisible" />
+
+        <Constraint
+            android:id="@+id/register_btn"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginEnd="@dimen/default_padding"
+            android:layout_marginBottom="@dimen/default_padding"
+            android:text="@string/action_register"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/device_iv"
+            app:layout_constraintVertical_bias="1.0" />
+
+        <Constraint
+            android:id="@+id/unregister_btn"
+            android:visibility="invisible" />
+
+        <Constraint
+            android:id="@+id/update_btn"
+            android:visibility="invisible" />
+
+    </ConstraintSet>
+
+    <ConstraintSet android:id="@+id/cs_updating_device_info" />
+
+
+</MotionScene>

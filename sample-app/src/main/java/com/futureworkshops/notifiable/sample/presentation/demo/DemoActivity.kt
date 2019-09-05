@@ -47,7 +47,7 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
 
     private lateinit var rootLayout: MotionLayout
     private lateinit var contentCard: MaterialCardView
-    private lateinit var contentLayout: ConstraintLayout
+    private lateinit var contentLayout: MotionLayout
     private lateinit var statusTv: AppCompatTextView
     private lateinit var versionTv: AppCompatTextView
     private lateinit var deviceNameEt: TextInputEditText
@@ -171,7 +171,6 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
                 if (currentId == R.id.cs_splash__slide_in_finish) {
                     viewModel.checkNotifiableStatus()
                 }
-
             }
 
         })
@@ -182,17 +181,23 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
 
         when {
             viewState.isCheckingNotifiableState -> {
-                updateConstraintSet(R.layout.layout_demo_content, contentLayout)
+                contentLayout.transitionToState(R.id.state_loading)
+                contentCard.requestLayout()
             }
             viewState.deviceRegistered -> {
-                updateConstraintSet(R.layout.layout_demo_content_registered, contentLayout)
+
+                contentLayout.transitionToState(R.id.state_device_registered)
+                contentCard.requestLayout()
+
                 statusTv.text = getString(R.string.lbl_state_registered)
                 statusTv.setTextColor(this.getPrimaryColour())
                 displayDeviceInfo(viewState)
                 unregisterBtn.isEnabled = true
+
             }
             viewState.deviceNotRegistered -> {
-                updateConstraintSet(R.layout.layout_demo_content_not_registered, contentLayout)
+                contentLayout.transitionToState(R.id.state_device_not_registered)
+                contentCard.requestLayout()
 
                 statusTv.text = getString(R.string.lbl_state_not_registered)
                 statusTv.setTextColor(this.getOnSurfaceColour())
@@ -200,6 +205,7 @@ class DemoActivity : AppCompatActivity(), Injectable, View.OnClickListener {
                 deviceNameEt.clear()
                 userNameEt.clear()
                 localeEt.clear()
+
             }
             viewState.isUpdating -> {
                 updateProgress.visibility = View.VISIBLE
