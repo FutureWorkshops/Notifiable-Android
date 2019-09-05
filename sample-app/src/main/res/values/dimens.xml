@@ -14,4 +14,5 @@
     <dimen name="ic_splash_logo_size">104dp</dimen>
     <dimen name="ic_logo_demo_size">64dp</dimen>
     <dimen name="default_elevation">4dp</dimen>
+    <dimen name="ic_expanded_logo_width">192dp</dimen>
 </resources>

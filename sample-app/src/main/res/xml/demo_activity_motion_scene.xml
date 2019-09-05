@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright ©  2018 - 2019 FutureWorkshops. All rights reserved.
+  -->
+
+<MotionScene xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <Transition
+        android:id="@+id/splash_slide_transition"
+        app:constraintSetEnd="@id/cs_splash__slide_in_finish"
+        app:constraintSetStart="@id/cs_splash_slide_in_start"
+        app:duration="1200"
+
+        >
+
+        <KeyFrameSet>
+
+            <KeyPosition
+                app:framePosition="30"
+                app:keyPositionType="deltaRelative"
+                app:motionTarget="@id/version_tv"
+                app:percentX="1"
+                app:percentY="1" />
+
+            <KeyPosition
+                app:framePosition="30"
+                app:keyPositionType="deltaRelative"
+                app:motionTarget="@id/app_bar"
+                app:percentY="1"
+                app:sizePercent="1" />
+
+            <KeyPosition
+                app:framePosition="39"
+                app:keyPositionType="deltaRelative"
+                app:motionTarget="@id/app_logo"
+                app:percentX="0.8"
+                app:percentY="1"
+                app:sizePercent="1" />
+
+            <KeyAttribute
+                android:alpha="1.0"
+                app:framePosition="39"
+                app:motionTarget="@id/app_logo" />
+
+            <KeyPosition
+                app:framePosition="41"
+                app:keyPositionType="deltaRelative"
+                app:motionTarget="@id/app_logo"
+                app:percentX="1"
+                app:percentY="1"
+                app:sizePercent="1" />
+
+            <KeyPosition
+                app:framePosition="41"
+                app:keyPositionType="deltaRelative"
+                app:motionTarget="@id/app_logo_2"
+                app:percentX="1"
+                app:percentY="1"
+                app:sizePercent="1" />
+
+            <KeyAttribute
+                android:alpha="0.0"
+                app:framePosition="41"
+                app:motionTarget="@id/app_logo_2" />
+
+            <KeyAttribute
+                android:alpha="0.5"
+                app:framePosition="48"
+                app:motionTarget="@id/app_logo_2" />
+
+            <KeyAttribute
+                android:alpha="0.5"
+                app:framePosition="48"
+                app:motionTarget="@id/app_logo" />
+
+            <KeyAttribute
+                android:alpha="0.0"
+                app:framePosition="55"
+                app:motionTarget="@id/app_logo" />
+
+            <KeyAttribute
+                android:alpha="1.0"
+                app:framePosition="55"
+                app:motionTarget="@id/app_logo_2" />
+
+
+            <KeyPosition
+                app:framePosition="60"
+                app:keyPositionType="deltaRelative"
+                app:motionTarget="@id/state_card"
+                app:percentX="0.2"
+                app:percentY="0.2"
+                app:transitionEasing="decelerate" />
+
+        </KeyFrameSet>
+
+    </Transition>
+
+
+    <ConstraintSet android:id="@+id/cs_splash_slide_in_start">
+
+        <Constraint
+            android:id="@id/app_bar"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/app_window_background"
+            android:translationZ="@dimen/default_elevation"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Constraint
+            android:id="@id/app_logo"
+            android:layout_width="@dimen/ic_splash_logo_size"
+            android:layout_height="@dimen/ic_splash_logo_size"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:contentDescription="@string/app_name"
+            android:translationZ="@dimen/default_elevation"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_logo_light" />
+
+
+        <Constraint
+            android:id="@+id/app_logo_2"
+            android:layout_width="@dimen/ic_expanded_logo_width"
+            android:layout_height="@dimen/ic_logo_demo_size"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:src="@drawable/ic_notifiable_text_logo"
+            android:translationZ="@dimen/default_elevation"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@id/app_bar_guideline"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.7" />
+
+        <Constraint
+            android:id="@id/version_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/default_padding"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+
+        <Constraint
+            android:id="@id/state_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toTopOf="@id/version_tv"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
+
+
+    </ConstraintSet>
+
+    <ConstraintSet
+        android:id="@+id/cs_splash__slide_in_finish"
+        app:transitionEasing="standard">
+        <Constraint
+            android:id="@id/app_bar"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/bg_app_bar"
+            android:translationZ="@dimen/default_elevation"
+            app:layout_constraintBottom_toBottomOf="@id/app_bar_guideline"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <Constraint
+            android:id="@id/app_logo"
+            android:layout_width="@dimen/ic_logo_demo_size"
+            android:layout_height="@dimen/ic_logo_demo_size"
+            android:src="@drawable/ic_logo_light"
+            android:translationZ="@dimen/default_elevation"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@+id/app_bar"
+            app:layout_constraintStart_toStartOf="@+id/app_logo_2"
+            app:layout_constraintTop_toTopOf="@+id/app_bar"
+            app:layout_constraintVertical_bias="0.7" />
+
+
+        <Constraint
+            android:id="@id/app_logo_2"
+            android:layout_width="@dimen/ic_expanded_logo_width"
+            android:layout_height="@dimen/ic_logo_demo_size"
+            android:src="@drawable/ic_notifiable_text_logo"
+            android:translationZ="@dimen/default_elevation"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@+id/app_bar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/app_bar"
+            app:layout_constraintVertical_bias="0.7" />
+
+
+        <Constraint
+            android:id="@id/version_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/default_padding"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+
+        <Constraint
+            android:id="@id/state_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/default_padding"
+            android:layout_marginTop="@dimen/default_padding"
+            android:layout_marginEnd="@dimen/default_padding"
+            android:visibility="visible"
+            app:layout_constraintBottom_toTopOf="@id/version_tv"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/app_bar"
+            app:layout_constraintVertical_bias="0.0" />
+
+
+    </ConstraintSet>
+
+
+</MotionScene>
