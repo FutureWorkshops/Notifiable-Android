@@ -29,32 +29,31 @@ Checkout the [sample-app](sample-app) for examples on how to use the SDK.
 
 ##### 1. Update your project's `build.gradle` file to include Jitpack
 
-	```
+	
 	allprojects {
 	 repositories {
 	    jcenter()
 	    maven { url "https://jitpack.io" }
 	 }
 	}
-	```
+	
 
 ##### 2. Update your app `build.gradle` file and add the Notifiable dependency
-	```
+
 	 implementation 'com.github.FutureWorkshops:Notifiable-Android:2.0.1@aar'
-	```
 	
-	PS: replace `2.0.1` with the latest version available
 	
-	* Don't forget the **@aar**!*
+PS: replace `2.0.1` with the latest version available
+	
+* Don't forget the **@aar**!*
 
 
 ##### 3. Add ProGuard rule
 
-	Add the following rule to your exising ProGuard setup
+Add the following rule to your exising ProGuard setup
 	
-	```
-	    -keep class com.futureworkshops.notifiable.model.** { *; }
-	```
+	-keep class com.futureworkshops.notifiable.model.** { *; }
+	
 
 #### Transitive dependencies
 
@@ -71,10 +70,11 @@ The Notifiable SDK relies on other 3rd party libraries to function **that must b
 
 
 You can automatically add all of the above dependencies by using
+
 ```
   implementation ('com.github.FutureWorkshops:Notifiable-Android:2.0.1@aar'){
-        transitive true
-    }
+      transitive true
+  }
 ```    
 
 #### Dependency conflict resolution
@@ -152,7 +152,7 @@ will **not be able to manage transitive dependencies**!
 	Add the following rule to your exising ProGuard setup
 	
 	```
-	 -keep class com.futureworkshops.notifiable.model.** { *; }
+	-keep class com.futureworkshops.notifiable.model.** { *; }
 	```
 
 ## Usage
