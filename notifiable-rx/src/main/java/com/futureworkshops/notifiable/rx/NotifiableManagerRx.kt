@@ -180,7 +180,6 @@ class NotifiableManagerRx private constructor(builder: Builder) {
      * This will notify the `Notifiable` application that a notification has been received on a device.
      *
      * @param notificationId id of the received notification
-     * @param deviceId       id returned by the server after registering the device
      */
     fun markNotificationReceived(notificationId: String): Completable {
         return callOnRegisteredDevice { deviceId ->
