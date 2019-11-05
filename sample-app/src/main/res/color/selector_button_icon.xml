@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright ©  2018 - 2019 FutureWorkshops. All rights reserved.
+  -->
+
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="@color/icon_active_light" />
+    <item android:color="@color/icon_active_light" android:state_activated="false" />
+    <item android:color="@color/icon_active_dark" android:state_activated="true" />
+</selector>

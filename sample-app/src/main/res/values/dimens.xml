@@ -15,4 +15,9 @@
     <dimen name="ic_logo_demo_size">64dp</dimen>
     <dimen name="default_elevation">4dp</dimen>
     <dimen name="ic_expanded_logo_width">192dp</dimen>
+
+
+    <!-- Button -->
+    <dimen name="flat_button_size">64dp</dimen>
+    <dimen name="flat_button_padding">16dp</dimen>
 </resources>

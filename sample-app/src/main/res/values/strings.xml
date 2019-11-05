@@ -45,4 +45,12 @@
 
     <string name="title_choose_locale">Choose Locale…</string>
 
+
+    <!--Call State-->
+    <string name="status_call_disconnected">Call ended</string>
+    <string name="status_call_incoming">Is Calling</string>
+    <string name="status_call_active">Call in progress</string>
+    <string name="status_call_dialing">Dialing…</string>
+    <string name="status_call_holding">Call On Hold</string>
+
 </resources>

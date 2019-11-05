@@ -17,4 +17,14 @@
     <color name="white">#ffffff</color>
     <color name="green_1">#5cb85c</color>
     <color name="red_tomato">#f44336</color>
+
+
+    <!-- Green -->
+    <color name="green_phone">#66bb6a</color>
+
+    <!-- Red -->
+    <color name="red_phone">#ef5350</color>
+    <color name="icon_active_light">#3D3D3D</color>
+    <color name="icon_active_dark">#FFFFFF</color>
+
 </resources>

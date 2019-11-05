@@ -98,6 +98,8 @@ dependencies {
     implementation Libraries.daggerAndroidSupport
     kapt Libraries.daggerAndroidProcessor
 
+    //CircleImageView
+    implementation 'de.hdodenhof:circleimageview:3.0.0'
 
 }
 

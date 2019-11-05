@@ -7,6 +7,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.futureworkshops.notifiable.sample">
 
+    <uses-permission android:name="android.permission.MANAGE_OWN_CALLS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <permission
@@ -25,7 +26,10 @@
         android:theme="@style/Notifiable.DayNight"
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="allowBackup">
-        <activity android:name=".presentation.voip.CallActivity"></activity>
+        <activity
+            android:name=".presentation.voip.CallActivity"
+            android:screenOrientation="portrait"
+            android:excludeFromRecents="true" />
         <activity
             android:name=".presentation.voip.IncomingCallActivity"
             android:screenOrientation="portrait" />
